@@ -31,3 +31,10 @@ alias i.='(idea $PWD &>/dev/null &)'
 alias c.='(code $PWD &>/dev/null &)'
 alias o.='open .'
 alias up='dot package update_all'
+
+ # Custom scripts
+ alias key='~/.dotfiles/bin/key.sh'
+ alias docker-login='~/.dotfiles/bin/docker-login.sh'
+ alias aliaser='~/.dotfiles/bin/aliaser.sh' # Custom scripts
+ alias key='~/.dotfiles/bin/key.sh'
+ alias docker-login='alias aliaser='~:wq
