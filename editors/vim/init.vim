@@ -22,8 +22,10 @@ Plug 'luochen1990/rainbow'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug '~/projects/Codely-vim-theme/vim'
 call plug#end()
 
+colorscheme Codely
 let mapleader = " "
 
 "NERDTree remaps

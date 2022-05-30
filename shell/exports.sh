@@ -12,6 +12,7 @@ export CODELY_THEME_PWD_MODE="short" # full, short, home_relative
 export JAVA_HOME='/Library/Java/JavaVirtualMachines/amazon-corretto-15.jdk/Contents/Home'
 export GEM_HOME="$HOME/.gem"
 export GOPATH="$HOME/.go"
+export RUBYPATH="/home/wall3n/.gem/ruby/3.0.0/bin"
 
 # ------------------------------------------------------------------------------
 # Apps
@@ -23,6 +24,8 @@ else
 fi
 
 export FZF_DEFAULT_OPTS="--color=$fzf_colors --reverse"
+export WHATWEB="/home/wall3n/workspace/utils/WhatWeb-0.5.5"
+export PROJECTSROOT="/home/wall3n/projects"
 
 # ------------------------------------------------------------------------------
 # Path - The higher it is, the more priority it has
@@ -35,6 +38,9 @@ export path=(
   "$GEM_HOME/bin"
   "$GOPATH/bin"
   "$HOME/.cargo/bin"
+  "$RUBYPATH"
+  "$WHATWEB"
+  "$PROJECTSROOT"
   "/usr/local/opt/ruby/bin"
   "/usr/local/opt/python/libexec/bin"
   "/opt/homebrew/bin"

@@ -8,6 +8,7 @@ alias ll="ls -l"
 alias la="ls -la"
 alias ~="cd ~"
 alias dotfiles='cd $DOTFILES_PATH'
+alias projects='cd $PROJECTSROOT'
 alias cat="/usr/bin/bat"
 alias vi="/usr/bin/nvim"
 alias vim="/usr/bin/nvim"

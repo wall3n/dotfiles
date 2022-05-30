@@ -1,0 +1,1 @@
+/home/wall3n/.xmonad/xmonad.hs
