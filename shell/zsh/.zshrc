@@ -28,3 +28,7 @@ source "$DOTLY_PATH/shell/zsh/bindings/dot.zsh"
 source "$DOTLY_PATH/shell/zsh/bindings/reverse_search.zsh"
 source "$DOTFILES_PATH/shell/zsh/key-bindings.zsh"
 export PATH="/Applications/CMake.app/Contents/bin":/opt/local/bin:/opt/local/sbin:$PATH
+
+# fnm
+export PATH="/Users/franmoreno/Library/Application Support/fnm:$PATH"
+eval "`fnm env`"
