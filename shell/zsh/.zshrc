@@ -10,8 +10,11 @@ setopt +o nomatch
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 
-# Start Zim
-source "$ZIM_HOME/init.zsh"
+# Start Starship
+eval "$(starship init zsh)"
+
+# Change the directory of the Starship config
+export STARSHIP_CONFIG=~/.dotfiles/shell/zsh/starship.toml
 
 # Async mode for autocompletion
 ZSH_AUTOSUGGEST_USE_ASYNC=true
@@ -19,14 +22,12 @@ ZSH_HIGHLIGHT_MAXLENGTH=300
 
 source "$DOTFILES_PATH/shell/init.sh"
 
-fpath=("$DOTFILES_PATH/shell/zsh/themes" "$DOTFILES_PATH/shell/zsh/completions" "$DOTLY_PATH/shell/zsh/themes" "$DOTLY_PATH/shell/zsh/completions" $fpath)
-
-autoload -Uz promptinit && promptinit
-prompt ${DOTLY_THEME:-codely}
-
+# Bindings
 source "$DOTLY_PATH/shell/zsh/bindings/dot.zsh"
 source "$DOTLY_PATH/shell/zsh/bindings/reverse_search.zsh"
 source "$DOTFILES_PATH/shell/zsh/key-bindings.zsh"
+
+# Cmake
 export PATH="/Applications/CMake.app/Contents/bin":/opt/local/bin:/opt/local/sbin:$PATH
 
 # fnm
