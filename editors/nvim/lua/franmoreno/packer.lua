@@ -43,8 +43,6 @@ return require('packer').startup(function(use)
 	  }
   }
 
-
-
   -- Installed colorchemes
   use 'shaunsingh/nord.nvim'
   use "rebelot/kanagawa.nvim"
