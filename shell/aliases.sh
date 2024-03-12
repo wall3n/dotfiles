@@ -3,6 +3,7 @@ alias sudo='sudo '
 
 alias ..="cd .."
 alias ...="cd ../.."
+alias ls="lsd"
 alias ll="ls -l"
 alias la="ls -la"
 alias ~="cd ~"
