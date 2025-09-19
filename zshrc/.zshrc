@@ -14,18 +14,13 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 eval "$(starship init zsh)"
 
 # Change the directory of the Starship config
-export STARSHIP_CONFIG=~/.dotfiles/shell/zsh/starship.toml
+export STARSHIP_CONFIG=~/.dotfiles/zshrc/starship.toml
 
 # Async mode for autocompletion
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_HIGHLIGHT_MAXLENGTH=300
 
-source "$DOTFILES_PATH/shell/init.sh"
-
-# Bindings
-source "$DOTLY_PATH/shell/zsh/bindings/dot.zsh"
-source "$DOTLY_PATH/shell/zsh/bindings/reverse_search.zsh"
-source "$DOTFILES_PATH/shell/zsh/key-bindings.zsh"
+source "$DOTFILES_PATH/zshrc/init.sh"
 
 # Cmake
 export PATH="/Applications/CMake.app/Contents/bin":/opt/local/bin:/opt/local/sbin:$PATH
