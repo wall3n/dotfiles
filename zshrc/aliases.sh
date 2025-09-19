@@ -1,25 +1,28 @@
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
 
+# Dir
 alias ..="cd .."
 alias ...="cd ../.."
-alias ls="lsd"
-alias ll="ls -l"
-alias la="ls -la"
-alias ~="cd ~"
+
+# Ls
+alias l="eza -l --icons --git -a"
+alias lt="eza --tree --level=2 --long --icons --git"
+alias ltree="eza --tree --level=2  --icons --git"
+
+
+# Dotfiles
 alias dotfiles='cd $DOTFILES_PATH'
 
 # Git
-alias gaa="git add -A"
-alias gc='git commit'
+alias gadd="git add"
+alias gc='git commit -m'
 alias gca="git add --all && git commit --amend --no-edit"
 alias gco="git checkout"
-alias gd='git diff'
-alias gs="git status "
-alias gf="git fetch --all -p"
+alias gdiff='git diff'
+alias gst="git status "
 alias gps="git push"
-alias gpsf="git push --force"
-alias gpl="git pull --rebase --autostash"
+alias gpl="git pull"
 alias gb="git branch"
 alias gl='git log'
 
