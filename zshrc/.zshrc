@@ -4,15 +4,10 @@
 export ZSH="$HOME/.oh-my-zsh"
 source "$ZSH/oh-my-zsh.sh"
 
-# Uncomment for debuf with `zprof`
-# zmodload zsh/zprof
+export LANG=es_ES.UTF-8
 
 # Start Starship
 eval "$(starship init zsh)"
-
-export LANG=es_ES.UTF-8
-
-# Change the directory of the Starship config
 export STARSHIP_CONFIG=~/.dotfiles/starship/starship.toml
 
 source "/Users/franmoreno/.dotfiles/zshrc/init.sh"
@@ -26,6 +21,12 @@ eval "`fnm env`"
 eval "$(fzf --zsh)"
 export PATH="/opt/homebrew/opt/bison/bin:$PATH"
 
+# Zoxide
+eval "$(zoxide init zsh)"
+compinit
 
+# Fzf
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-
+export XDG_CONFIG_HOME="/Users/franmoreno/.config"
