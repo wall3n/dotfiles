@@ -14,7 +14,7 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 eval "$(starship init zsh)"
 
 # Change the directory of the Starship config
-export STARSHIP_CONFIG=~/.dotfiles/zshrc/starship.toml
+export STARSHIP_CONFIG=~/.dotfiles/starship/starship.toml
 
 # Async mode for autocompletion
 ZSH_AUTOSUGGEST_USE_ASYNC=true
