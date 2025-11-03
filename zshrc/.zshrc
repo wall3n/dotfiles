@@ -29,4 +29,7 @@ compinit
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# sdkman - Java Version Manager
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+
 export XDG_CONFIG_HOME="/Users/franmoreno/.config"
