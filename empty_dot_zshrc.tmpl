@@ -1,0 +1,72 @@
+# --- Configuración Básica ---
+export EDITOR="nvim"
+
+# --- Inicializaciones (Cross-platform) ---
+
+# 1. Starship (Prompt)
+eval "$(starship init zsh)"
+
+# 2. Zoxide (El nuevo 'z')
+eval "$(zoxide init zsh)"
+
+# --- Alias Inteligentes ---
+
+# EZA command
+if command -v eza &> /dev/null; then
+	alias ls="eza --icons --git"
+	alias l="eza -l --icons --git -a"
+	alias lt="eza --tree --level=2 --long --icons --git"
+	alias ltree="eza --tree --level=2  --icons --git"
+fi
+
+# BAT
+if command -v bat &> /dev/null; then
+    alias cat='bat'
+elif command -v batcat &> /dev/null; then
+    alias cat='batcat'
+fi
+
+# NVIM
+alias v="nvim"
+alias vi="nvim"
+alias vim="nvim"
+
+# ZOXIDE
+if command -v z &> /dev/null; then
+	alias cd='z'
+fi
+
+# GIT
+alias gadd="git add"
+alias gc='git commit -m'
+alias gca="git add --all && git commit --amend --no-edit"
+alias gco="git checkout"
+alias gdiff='git diff'
+alias gst="git status "
+alias gps="git push"
+alias gpl="git pull"
+alias gb="git branch"
+alias gl='git log'
+
+# ------------------------------------------------------------------------------
+# Path - The higher it is, the more priority it has
+# ------------------------------------------------------------------------------
+path=(
+	"$HOME/bin"
+	"$JAVA_HOME/bin"
+	"$GEM_HOME/bin"
+	"$GOPATH/bin"
+	"$HOME/.cargo/bin"
+	"/usr/local/opt/ruby/bin"
+	"/usr/local/opt/python/libexec/bin"
+	"/opt/homebrew/bin"
+	"/usr/local/bin"
+	"/usr/local/sbin"
+	"/bin"
+	"/usr/bin"
+	"/usr/sbin"
+	"/sbin"
+	"$path"
+)
+
+export path
