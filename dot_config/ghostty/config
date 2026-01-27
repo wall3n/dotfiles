@@ -1,0 +1,6 @@
+shell-integration = zsh
+font-size = 17
+mouse-hide-while-typing = true
+window-decoration = true
+font-family = "JetBrains Mono"
+theme = Catppuccin Mocha
