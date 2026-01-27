@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# --- macOS (Homebrew) ---
+{{ if eq .chezmoi.os "darwin" -}}
+echo "🍎 Detectado macOS. Verificando Homebrew..."
+
+# 1. Instalar Homebrew si no existe
+if ! command -v brew &> /dev/null; then
+    echo "Instalando Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+    # Cargar entorno temporalmente para el script
+    if [[ -f /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -f /usr/local/bin/brew ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi
+
+# 2. Instalar Paquetes (Brewfile inline)
+# El hash hace que el script se ejecute si cambias esta lista
+# Paquetes: {{ list "neovim" "starship" "bat" "lsd" "zoxide" "ripgrep" "font-jetbrains-mono-nerd-font" | join " " }}
+
+brew bundle --file=/dev/stdin <<EOF
+tap "homebrew/cask-fonts"
+brew "neovim"
+brew "starship"
+brew "bat"
+brew "lsd"
+brew "zoxide"
+brew "ripgrep"
+brew "git"
+cask "ghostty"
+cask "font-jetbrains-mono-nerd-font"
+EOF
+
+# --- Linux (Debian/Ubuntu) ---
+{{ else if eq .chezmoi.os "linux" -}}
+echo "🐧 Detectado Linux. Iniciando instalación..."
+
+sudo apt update
+sudo apt install -y zsh neovim git build-essential curl
+
+# Instalar Starship
+if ! command -v starship &> /dev/null; then
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+fi
+
+# Instalar Zoxide
+if ! command -v zoxide &> /dev/null; then
+    curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+fi
+
+# Instalar Bat (En Ubuntu se llama batcat)
+sudo apt install -y bat
+mkdir -p ~/.local/bin
+ln -sf /usr/bin/batcat ~/.local/bin/bat
+
+# Instalar LSD (Intento genérico, idealmente usar cargo)
+if ! command -v lsd &> /dev/null; then
+    echo "⚠️  Recuerda instalar LSD manualmente o con cargo en Linux."
+fi
+
+{{ end -}}
+
+# --- Configuración final común ---
+# Cambiar shell a zsh si no lo es
+if [ "$SHELL" != "$(which zsh)" ]; then
+    echo "Cambiar shell por defecto a Zsh..."
+    chsh -s "$(which zsh)"
+fi
+
+echo "✅ Script de instalación completado."
