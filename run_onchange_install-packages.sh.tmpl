@@ -62,7 +62,12 @@ fi
 
 {{ end -}}
 
-# --- Finalización ---
+# --- Ejecución común ---
+if ! command -v opencode &> /dev/null; then
+    echo "🤖 Instalando Opencode Agent CLI..."
+    curl -fsSL https://opencode.ai/install | bash
+fi
+
 if [ "$SHELL" != "$(which zsh)" ]; then
     echo "Cambiando shell a Zsh..."
     chsh -s "$(which zsh)"
