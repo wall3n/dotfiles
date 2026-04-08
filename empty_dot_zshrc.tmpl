@@ -34,6 +34,19 @@ eval "$(starship init zsh)"
 # 2. Zoxide (El nuevo 'z')
 eval "$(zoxide init zsh)"
 
+# --- Historial ---
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+
+setopt append_history
+setopt share_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_verify
+setopt extended_history
+
 # --- Alias Inteligentes ---
 
 # EZA command
@@ -73,6 +86,19 @@ alias gpl="git pull"
 alias gb="git branch"
 alias gl='git log'
 
+if [ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+# --- Configurar fzf ---
+if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
+    source /usr/share/doc/fzf/examples/key-bindings.zsh
+    source /usr/share/doc/fzf/examples/completion.zsh
+fi
+
 # NVM
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+# STEL
+alias tunnel="cloudflared tunnel --url http://localhost:8080"
