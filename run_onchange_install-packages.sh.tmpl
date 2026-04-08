@@ -73,4 +73,14 @@ if [ "$SHELL" != "$(which zsh)" ]; then
     chsh -s "$(which zsh)"
 fi
 
+if [ ! -d "$HOME/.zsh/zsh-autosuggestions" ]; then
+    echo "Instalando zsh-autosuggestions..."
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+fi
+
+if ! command -v fzf &> /dev/null; then
+    echo "Instalando fzf mediante apt..."
+    sudo apt-get install -y fzf
+fi
+
 echo "✅ Instalación completada."
