@@ -102,3 +102,4 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 
 # STEL
 alias tunnel="cloudflared tunnel --url http://localhost:8080"
+alias projects='cd ~/workspaces && cd "$(find . -mindepth 2 -maxdepth 2 -type d | sed "s|^\./||" | fzf --height 15% --reverse)"'
