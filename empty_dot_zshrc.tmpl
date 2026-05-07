@@ -2,13 +2,14 @@
 # ------------------------------------------------------------------------------
 # Path - The higher it is, the more priority it has
 # ------------------------------------------------------------------------------
+typeset -U path  # Elimina duplicados automáticamente
 path=(
 	"$HOME/bin"
 	"$HOME/.local/bin"
 	"$HOME/.opencode/bin"
-	"$JAVA_HOME/bin"
-	"$GEM_HOME/bin"
-	"$GOPATH/bin"
+	${JAVA_HOME:+"$JAVA_HOME/bin"}
+	${GEM_HOME:+"$GEM_HOME/bin"}
+	${GOPATH:+"$GOPATH/bin"}
 	"$HOME/.cargo/bin"
 	"/usr/local/opt/ruby/bin"
 	"/usr/local/opt/python/libexec/bin"
@@ -19,20 +20,12 @@ path=(
 	"/usr/bin"
 	"/usr/sbin"
 	"/sbin"
-	"$path"
+	"/snap/bin"
+	$path
 )
 
-export path
 # --- Configuración Básica ---
 export EDITOR="nvim"
-
-# --- Inicializaciones (Cross-platform) ---
-
-# 1. Starship (Prompt)
-eval "$(starship init zsh)"
-
-# 2. Zoxide (El nuevo 'z')
-eval "$(zoxide init zsh)"
 
 # --- Historial ---
 HISTFILE=$HOME/.zsh_history
@@ -96,10 +89,20 @@ if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
     source /usr/share/doc/fzf/examples/completion.zsh
 fi
 
-# NVM
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+# NVM - Usar siempre ~/.nvm como directorio canónico
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # STEL
 alias tunnel="cloudflared tunnel --url http://localhost:8080"
 alias projects='cd ~/workspaces && cd "$(find . -mindepth 2 -maxdepth 2 -type d | sed "s|^\./||" | fzf --height 15% --reverse)"'
+alias autoskill='npx autoskills'
+
+# --- Inicializaciones (al final para evitar warnings de zoxide) ---
+
+# Starship (Prompt)
+eval "$(starship init zsh)"
+
+# Zoxide (debe ir al final del archivo)
+eval "$(zoxide init zsh)"
