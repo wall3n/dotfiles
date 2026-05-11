@@ -1,0 +1,158 @@
+# ── Mod key (Super = Windows key) ──────────────────────
+set $mod Mod4
+
+# ── Font ───────────────────────────────────────────────
+font pango:JetBrains Mono 10
+
+# ── Terminal ───────────────────────────────────────────
+set $term /snap/bin/ghostty
+bindsym $mod+Return exec --no-startup-id $term
+
+# ── Launcher (rofi) ────────────────────────────────────
+bindsym $mod+d exec rofi -show drun -show-icons
+
+# ── Apagar ventana ─────────────────────────────────────
+bindsym $mod+q kill
+
+# ── Bloquear ventana ─────────────────────────────────────
+bindsym $mod+Shift+x exec betterlockscreen -l dim
+
+# ── Gestor de audio ─────────────────────────────────────
+bindsym $mod+Shift+v exec pavucontrol
+
+# ── Recargar config sin reiniciar ──────────────────────
+bindsym $mod+Shift+r reload
+bindsym $mod+Shift+e exec i3-nagbar -t warning -m \
+  'Salir de i3?' -B 'Sí' 'i3-msg exit'
+
+# ── Foco entre ventanas (hjkl estilo vim) ──────────────
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left  focus left
+bindsym $mod+Down  focus down
+bindsym $mod+Up    focus up
+bindsym $mod+Right focus right
+
+# ── Mover ventanas ─────────────────────────────────────
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# ── Split horizontal / vertical ────────────────────────
+bindsym $mod+b split h
+bindsym $mod+v split v
+
+# ── Pantalla completa ──────────────────────────────────
+bindsym $mod+f fullscreen toggle
+
+# ── Layouts ────────────────────────────────────────────
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# ── Flotante ───────────────────────────────────────────
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+floating_modifier $mod
+
+# ── Workspaces ─────────────────────────────────────────
+set $ws1  "1"
+set $ws2  "2"
+set $ws3  "3"
+set $ws4  "4"
+set $ws5  "5"
+set $ws6  "6"
+set $ws7  "7"
+set $ws8  "8"
+set $ws9  "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# ── Resize mode ────────────────────────────────────────
+mode "resize" {
+  bindsym h resize shrink width  10 px or 10 ppt
+  bindsym l resize grow   width  10 px or 10 ppt
+  bindsym k resize shrink height 10 px or 10 ppt
+  bindsym j resize grow   height 10 px or 10 ppt
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# ── Gaps ───────────────────────────────────────────────
+gaps inner 8
+gaps outer 4
+smart_gaps on
+smart_borders on
+
+# ── Bordes ─────────────────────────────────────────────
+default_border          pixel 2
+default_floating_border pixel 2
+hide_edge_borders       smart
+
+# ── Colores (tema Onedark) ─────────────────────────────
+#                       border   bg       text     indicator child_b
+client.focused          #61afef  #282c34  #abb2bf  #56b6c2  #61afef
+client.focused_inactive #282c34  #282c34  #5c6370  #282c34  #282c34
+client.unfocused        #1e2127  #1e2127  #5c6370  #1e2127  #1e2127
+client.urgent           #e06c75  #e06c75  #ffffff  #e06c75  #e06c75
+
+# ── Barra ──────────────────────────────────────────────
+bar {
+  position         bottom
+  status_command   i3status -c ~/.config/i3status/config
+  font             pango:JetBrains Mono 10
+
+  colors {
+    background         #1e2127
+    statusline         #abb2bf
+    separator          #3e4451
+    #                   border   bg       text
+    focused_workspace  #61afef  #61afef  #1e2127
+    active_workspace   #282c34  #282c34  #abb2bf
+    inactive_workspace #1e2127  #1e2127  #5c6370
+    urgent_workspace   #e06c75  #e06c75  #ffffff
+  }
+}
+
+# ── Autostart ──────────────────────────────────────────
+exec_always --no-startup-id feh --bg-fill ~/.config/i3/wallpaper.png
+exec_always --no-startup-id picom --config ~/.config/picom/picom.conf -b
+exec_always --no-startup-id autorandr --change
+exec        --no-startup-id dunst
+exec        --no-startup-id nm-applet
+
+workspace 1  output DP-1
+workspace 2  output DP-1
+workspace 3  output DP-1
+workspace 4  output DP-1
+workspace 5  output DP-1
+workspace 6  output HDMI-1
+workspace 7  output HDMI-1
+workspace 8  output HDMI-1
+workspace 9  output HDMI-1
+workspace 10 output HDMI-1

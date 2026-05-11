@@ -1,0 +1,232 @@
+#!/usr/bin/env bash
+# ══════════════════════════════════════════════════════════════════
+#  keymaps — Cheatsheet interactivo con fzf
+#  Cubre: tmux + nvim + ghostty
+#  Uso: keymaps [query]
+#  Instalar: cp keymaps ~/.local/bin/keymaps && chmod +x ~/.local/bin/keymaps
+# ══════════════════════════════════════════════════════════════════
+
+# ─── Colores ANSI ─────────────────────────────────────────────────
+RESET="\033[0m"
+BOLD="\033[1m"
+DIM="\033[2m"
+
+# Colores para secciones
+TMUX_HDR="\033[38;5;215m"   # naranja  — tmux
+NVIM_HDR="\033[38;5;114m"   # verde    — nvim
+GHOST_HDR="\033[38;5;141m"  # púrpura  — ghostty
+KEY_CLR="\033[38;5;255m"    # blanco brillante para las teclas
+DESC_CLR="\033[38;5;245m"   # gris claro para descripciones
+SEP_CLR="\033[38;5;238m"    # gris oscuro para separadores
+
+# ─── Datos ────────────────────────────────────────────────────────
+# Formato de cada línea:
+#   SCOPE TAB CATEGORIA TAB ATAJO TAB DESCRIPCION
+# El TAB permite que fzf lo procese y lo alinee correctamente.
+
+keymaps() {
+cat <<'EOF'
+TMUX	Prefix	C-a	Prefix principal (alternativa a C-b)
+TMUX	Prefix	C-b	Prefix clásico (sigue funcionando)
+TMUX	Config	<prefix> r	Recargar configuración tmux
+TMUX	Sesiones	<prefix> o	tmux-sessionx: session manager con preview fzf
+TMUX	Sesiones	<prefix> f	tmux-sessionizer: fuzzy-find directorio → sesión
+TMUX	Sesiones	<prefix> N	Nueva sesión con nombre
+TMUX	Sesiones	<prefix> X	Eliminar sesión actual (con confirmación)
+TMUX	Sesiones	<prefix> $	Renombrar sesión actual
+TMUX	Sesiones	<prefix> s	Listar todas las sesiones
+TMUX	Sesiones	<prefix> (  /  )	Sesión anterior / siguiente
+TMUX	Ventanas	<prefix> c	Nueva ventana (hereda directorio actual)
+TMUX	Ventanas	<prefix> ,	Renombrar ventana
+TMUX	Ventanas	<prefix> 1-9	Ir a ventana N
+TMUX	Ventanas	<prefix> ^	Última ventana visitada
+TMUX	Ventanas	<prefix> <	Mover ventana a la izquierda
+TMUX	Ventanas	<prefix> >	Mover ventana a la derecha
+TMUX	Ventanas	<prefix> w	Árbol de ventanas/sesiones
+TMUX	Panes	<prefix> |	Split horizontal (en dir actual)
+TMUX	Panes	<prefix> -	Split vertical (en dir actual)
+TMUX	Panes	<prefix> h	Ir al pane izquierdo
+TMUX	Panes	<prefix> j	Ir al pane inferior
+TMUX	Panes	<prefix> k	Ir al pane superior
+TMUX	Panes	<prefix> l	Ir al pane derecho
+TMUX	Panes	<prefix> H	Redimensionar pane ← (5 cols)
+TMUX	Panes	<prefix> J	Redimensionar pane ↓ (5 filas)
+TMUX	Panes	<prefix> K	Redimensionar pane ↑ (5 filas)
+TMUX	Panes	<prefix> L	Redimensionar pane → (5 cols)
+TMUX	Panes	<prefix> m	Maximizar / restaurar pane actual
+TMUX	Panes	<prefix> z	Zoom nativo tmux (toggle)
+TMUX	Panes	<prefix> x	Cerrar pane actual
+TMUX	Panes	Alt+p	Pane flotante tmux-floax (toggle)
+TMUX	CopyMode	<prefix> [	Entrar en copy mode
+TMUX	CopyMode	v	Iniciar selección (vi visual)
+TMUX	CopyMode	V	Seleccionar línea completa
+TMUX	CopyMode	C-v	Selección rectangular
+TMUX	CopyMode	y	Copiar selección al portapapeles
+TMUX	CopyMode	H	Ir al inicio de línea
+TMUX	CopyMode	L	Ir al final de línea
+TMUX	CopyMode	q / Esc	Salir de copy mode
+NVIM	Leader	ESPACIO	Leader key
+NVIM	Archivos	<leader>ff	Telescope: buscar archivos
+NVIM	Archivos	<leader>fg	Telescope: grep en proyecto
+NVIM	Archivos	<leader>fb	Telescope: buffers abiertos
+NVIM	Archivos	<leader>fr	Telescope: archivos recientes
+NVIM	Archivos	<leader>fw	Telescope: buscar palabra bajo cursor
+NVIM	Archivos	<leader>fj	Telescope: buscar archivos Java
+NVIM	Archivos	<leader>ft	Telescope: buscar TODOs
+NVIM	Harpoon	<leader>ha	Añadir archivo actual a harpoon
+NVIM	Harpoon	<leader>hh	Abrir menú harpoon
+NVIM	Harpoon	<leader>1	Ir al archivo harpoon 1
+NVIM	Harpoon	<leader>2	Ir al archivo harpoon 2
+NVIM	Harpoon	<leader>3	Ir al archivo harpoon 3
+NVIM	Harpoon	<leader>4	Ir al archivo harpoon 4
+NVIM	Árbol	<leader>e	Toggle neo-tree
+NVIM	Árbol	<leader>o	Focus neo-tree
+NVIM	LSP	gd	Ir a definición
+NVIM	LSP	gr	Ver referencias (Telescope)
+NVIM	LSP	K	Documentación hover
+NVIM	LSP	<leader>ls	Signature help
+NVIM	LSP	<leader>la	Code actions
+NVIM	LSP	<leader>lr	Renombrar símbolo
+NVIM	LSP	<leader>lf	Formatear archivo (LSP)
+NVIM	LSP	<leader>lF	Formatear archivo (conform)
+NVIM	LSP	<leader>ld	Ver diagnóstico flotante
+NVIM	LSP	[d	Diagnóstico anterior
+NVIM	LSP	]d	Diagnóstico siguiente
+NVIM	LSP	<leader>lm	Abrir Mason
+NVIM	Java	<leader>jo	Organizar imports
+NVIM	Java	<leader>jv	Extraer variable
+NVIM	Java	<leader>jc	Extraer constante
+NVIM	Java	<leader>jm	Extraer método (visual)
+NVIM	Java	<leader>jt	Test método más cercano
+NVIM	Java	<leader>jT	Test clase completa
+NVIM	Git	<leader>gs	Git status (fugitive)
+NVIM	Git	<leader>gc	Git commit
+NVIM	Git	<leader>gp	Git push
+NVIM	Git	<leader>gb	Git blame
+NVIM	Git	<leader>gd	Git diff
+NVIM	Git	<leader>ghb	Blame de línea actual (inline)
+NVIM	Git	]h	Hunk siguiente
+NVIM	Git	[h	Hunk anterior
+NVIM	Editor	<leader>uu	Toggle Undotree
+NVIM	Editor	<leader>xx	Toggle Trouble (diagnósticos)
+NVIM	Editor	<leader>sr	Buscar y reemplazar (Spectre)
+NVIM	Editor	<leader>rw	Reemplazar palabra bajo cursor
+NVIM	Editor	]t	TODO siguiente
+NVIM	Editor	[t	TODO anterior
+NVIM	Splits	<leader>sv	Split vertical
+NVIM	Splits	<leader>sh	Split horizontal
+NVIM	Splits	C-h	Navegar al split izquierdo
+NVIM	Splits	C-j	Navegar al split inferior
+NVIM	Splits	C-k	Navegar al split superior
+NVIM	Splits	C-l	Navegar al split derecho
+NVIM	Quickfix	]q	Quickfix siguiente
+NVIM	Quickfix	[q	Quickfix anterior
+NVIM	Quickfix	]l	Location list siguiente
+NVIM	Quickfix	[l	Location list anterior
+NVIM	Completado	Tab	Siguiente sugerencia / expandir snippet
+NVIM	Completado	S-Tab	Sugerencia anterior / retroceder snippet
+NVIM	Completado	CR	Confirmar selección
+NVIM	Completado	C-Space	Forzar completado
+NVIM	Completado	C-e	Cancelar completado
+NVIM	Completado	C-n / C-p	Navegar sugerencias (sin filtrar)
+NVIM	Movimiento	s{c}{c}	Leap: saltar a cualquier lugar (2 chars)
+NVIM	Movimiento	C-d	Scroll hacia abajo (centrado)
+NVIM	Movimiento	C-u	Scroll hacia arriba (centrado)
+NVIM	Movimiento	n	Búsqueda siguiente (centrado)
+NVIM	Movimiento	N	Búsqueda anterior (centrado)
+GHOSTTY	Portapapeles	C-S-c	Copiar al portapapeles
+GHOSTTY	Portapapeles	C-S-v	Pegar del portapapeles
+GHOSTTY	Ventanas	C-S-n	Nueva ventana
+GHOSTTY	Ventanas	C-S-q	Cerrar ventana
+GHOSTTY	Ventanas	C-Enter	Toggle pantalla completa
+GHOSTTY	Tabs	C-S-t	Nueva pestaña
+GHOSTTY	Tabs	C-S-w	Cerrar pestaña
+GHOSTTY	Tabs	C-Tab	Siguiente pestaña
+GHOSTTY	Tabs	C-S-Tab	Pestaña anterior
+GHOSTTY	Tabs	Alt+1-8	Ir a pestaña N
+GHOSTTY	Tabs	Alt+9	Última pestaña
+GHOSTTY	Splits	C-S-o	Nuevo split → derecha
+GHOSTTY	Splits	C-S-e	Nuevo split → abajo
+GHOSTTY	Splits	C-Alt-↑/↓/←/→	Navegar entre splits
+GHOSTTY	Splits	C-S-Enter	Toggle zoom split actual
+GHOSTTY	Scroll	Shift+PageUp	Scroll página arriba
+GHOSTTY	Scroll	Shift+PageDown	Scroll página abajo
+GHOSTTY	Scroll	Shift+Home	Ir al inicio del scrollback
+GHOSTTY	Scroll	Shift+End	Ir al final del scrollback
+GHOSTTY	Fuente	C-=	Aumentar tamaño de fuente
+GHOSTTY	Fuente	C--	Reducir tamaño de fuente
+GHOSTTY	Fuente	C-0	Resetear tamaño de fuente
+GHOSTTY	Config	C-,	Abrir configuración
+GHOSTTY	Config	C-S-,	Recargar configuración
+GHOSTTY	Config	C-S-p	Paleta de comandos
+EOF
+}
+
+# ─── Formateo de colores para fzf preview ─────────────────────────
+colored_output() {
+    local prev_scope=""
+    while IFS=$'\t' read -r scope category key desc; do
+        # Separador de sección si cambia el scope
+        if [[ "$scope" != "$prev_scope" ]]; then
+            if [[ "$scope" == "TMUX" ]]; then
+                printf "\033[38;5;215m\033[1m  ════ TMUX ══════════════════════════════════════ \033[0m\n"
+            elif [[ "$scope" == "NVIM" ]]; then
+                printf "\033[38;5;114m\033[1m  ════ NVIM ══════════════════════════════════════ \033[0m\n"
+            else
+                printf "\033[38;5;141m\033[1m  ════ GHOSTTY ════════════════════════════════════ \033[0m\n"
+            fi
+            prev_scope="$scope"
+        fi
+
+        # Color del scope badge
+        if [[ "$scope" == "TMUX" ]]; then
+            badge="\033[38;5;215m\033[1m[TMUX   ]\033[0m"
+        elif [[ "$scope" == "NVIM" ]]; then
+            badge="\033[38;5;114m\033[1m[NVIM   ]\033[0m"
+        else
+            badge="\033[38;5;141m\033[1m[GHOSTTY]\033[0m"
+        fi
+
+        # Categoría en gris
+        cat_fmt="\033[38;5;67m${category}\033[0m"
+
+        # Tecla en blanco brillante, descripción en gris
+        key_fmt="\033[38;5;255m\033[1m$(printf '%-28s' "$key")\033[0m"
+        desc_fmt="\033[38;5;245m${desc}\033[0m"
+
+        printf "  %b  %b  %b  %b\n" "$badge" "$cat_fmt" "$key_fmt" "$desc_fmt"
+    done
+}
+
+# ─── Sin fzf: fallback a pager ────────────────────────────────────
+if ! command -v fzf &>/dev/null; then
+    echo -e "${BOLD}${TMUX_HDR}[!] fzf no encontrado — mostrando sin filtro interactivo${RESET}"
+    keymaps | colored_output | less -R
+    exit 0
+fi
+
+# ─── Con fzf: cheatsheet interactivo ─────────────────────────────
+# La query inicial puede pasarse como argumento
+INITIAL_QUERY="${1:-}"
+
+keymaps \
+| fzf \
+    --query "$INITIAL_QUERY" \
+    --ansi \
+    --delimiter=$'\t' \
+    --with-nth='1,2,3,4' \
+    --preview-window=hidden \
+    --height=80% \
+    --border=rounded \
+    --border-label=' 󰌌 Keymaps — tmux · nvim · ghostty ' \
+    --border-label-pos=3 \
+    --prompt='  Buscar atajo: ' \
+    --color='bg+:#2a2a2a,fg+:#ffffff,hl+:#d7875f,border:#555555,prompt:#d7875f,label:#d7875f,header:#a8cc8c' \
+    --header=$'C-t → TMUX  │  C-n → NVIM  │  C-g → GHOSTTY  │  C-a → todos  │  Enter → copiar  │  Esc → salir' \
+    --bind "ctrl-t:change-query(TMUX)" \
+    --bind "ctrl-n:change-query(NVIM)" \
+    --bind "ctrl-g:change-query(GHOSTTY)" \
+    --bind "ctrl-a:change-query()" \
+    --bind "enter:execute(echo {3} | tr -d '\n' | xclip -selection clipboard 2>/dev/null || echo {3} | tr -d '\n' | pbcopy 2>/dev/null)+abort" \
+    --bind "esc:abort" \
+    | awk -F'\t' '{print $3, "-", $4}'

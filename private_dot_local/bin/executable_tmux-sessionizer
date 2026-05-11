@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# ══════════════════════════════════════════════════════════════════
+#  tmux-sessionizer — ThePrimeagen style
+#  Fuzzy-find un directorio y crea/cambia a su sesión tmux.
+#
+#  Uso:
+#    tmux-sessionizer              → fzf interactivo
+#    tmux-sessionizer /ruta/dir    → directo sin fzf
+#
+#  Añade tus directorios base en la variable SEARCH_DIRS
+# ══════════════════════════════════════════════════════════════════
+
+# ─── Directorios donde buscar proyectos ───────────────────────────
+SEARCH_DIRS=(
+    "$HOME/projects"
+    "$HOME/work"
+    "$HOME/.config"
+    "$HOME/dotfiles"
+    "$HOME"
+)
+
+# Profundidad máxima de búsqueda dentro de cada directorio
+MAX_DEPTH=3
+
+# ─── Lógica principal ─────────────────────────────────────────────
+
+if [[ $# -eq 1 ]]; then
+    # Si se pasa un argumento directo, úsalo
+    selected=$1
+else
+    # Construir lista de directorios y fuzzy-findear con fzf
+    selected=$(
+        find "${SEARCH_DIRS[@]}" \
+            -mindepth 1 \
+            -maxdepth $MAX_DEPTH \
+            -type d \
+            2>/dev/null \
+        | fzf \
+            --prompt="  Sesión: " \
+            --height=50% \
+            --reverse \
+            --border \
+            --preview 'ls -la {}' \
+            --preview-window=right:40%
+    )
+fi
+
+# Si el usuario cancela fzf, salir limpiamente
+if [[ -z $selected ]]; then
+    exit 0
+fi
+
+# Normalizar el nombre de sesión: reemplaza puntos y barras por guiones
+selected_name=$(basename "$selected" | tr '.' '-' | tr '/' '-')
+
+# ¿Tmux está corriendo?
+tmux_running=$(pgrep tmux)
+
+# ─── Caso 1: No hay tmux en absoluto → crear sesión y adjuntar ────
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+    tmux new-session -s "$selected_name" -c "$selected"
+    exit 0
+fi
+
+# ─── Caso 2: La sesión ya existe → saltar a ella ──────────────────
+if ! tmux has-session -t="$selected_name" 2>/dev/null; then
+    # Crear la sesión en background (sin adjuntar)
+    tmux new-session -ds "$selected_name" -c "$selected"
+fi
+
+# ─── Caso 3: Cambiar a la sesión ──────────────────────────────────
+tmux switch-client -t "$selected_name"
