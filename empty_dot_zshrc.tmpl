@@ -40,6 +40,9 @@ setopt hist_ignore_space
 setopt hist_verify
 setopt extended_history
 
+# --- Sistema de completado (con caché -C para arranque rápido) ---
+autoload -Uz compinit && compinit -C
+
 # --- Alias Inteligentes ---
 
 # EZA command
@@ -106,3 +109,6 @@ eval "$(starship init zsh)"
 
 # Zoxide (debe ir al final del archivo)
 eval "$(zoxide init zsh)"
+
+# Alias cd -> z (DESPUÉS de init zoxide; antes el guard fallaba porque z aún no existía)
+alias cd='z'

@@ -4,3 +4,5 @@ LICENSE
 .gitignore
 scripts/
 token.txt
+CLAUDE.md
+AUDIT_REPORT.md

@@ -52,17 +52,10 @@ autocmd("BufWritePre", {
     end,
 })
 
--- ============================================================
--- JAVA: Configurar jdtls al abrir archivos Java
--- ============================================================
-local javaGroup = augroup("JavaLSP", { clear = true })
-autocmd("FileType", {
-    group = javaGroup,
-    pattern = "java",
-    callback = function()
-        require("config.plugins.java").setup()
-    end,
-})
+-- NOTA: El arranque de jdtls para archivos Java se registra dentro de
+-- lua/config/plugins/java.lua (donde M.setup está en alcance). Antes se
+-- intentaba aquí con require("config.plugins.java").setup(), pero ese módulo
+-- devuelve la spec de plugins (no M), así que la llamada fallaba siempre.
 
 -- ============================================================
 -- CERRAR VENTANAS AUXILIARES CON 'q'

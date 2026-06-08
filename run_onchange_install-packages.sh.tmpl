@@ -15,24 +15,28 @@ fi
 # Paquetes: {{ list "neovim" "starship" "bat" "eza" "zoxide" "ripgrep" | join " " }}
 
 brew bundle --no-lock --file=/dev/stdin <<EOF
-tap "homebrew/cask-fonts"
 brew "neovim"
 brew "starship"
 brew "bat"
 brew "eza"
 brew "zoxide"
 brew "ripgrep"
+brew "fd"
 brew "git"
 cask "ghostty"
 cask "font-jetbrains-mono-nerd-font"
 EOF
+
+# Key repeat rápido (mejor para navegación vim). Requiere reiniciar sesión.
+defaults write -g KeyRepeat -int 1
+defaults write -g InitialKeyRepeat -int 15
 
 # --- Linux (Debian/Ubuntu) ---
 {{ else if eq .chezmoi.os "linux" -}}
 echo "🐧 Detectado Linux. Instalando dependencias..."
 
 sudo apt update
-sudo apt install -y zsh git build-essential curl wget gpg
+sudo apt install -y zsh git build-essential curl wget gpg fd-find
 sudo snap install nvim --classic
 
 # Instalar Starship
@@ -82,6 +86,12 @@ fi
 if ! command -v fzf &> /dev/null; then
     echo "Instalando fzf mediante apt..."
     sudo apt-get install -y fzf
+fi
+
+# --- Bootstrap de herramientas Neovim vía Mason (idempotente) ---
+if command -v nvim &> /dev/null; then
+    echo "🔧 Instalando LSP/DAP/formatters vía Mason..."
+    nvim --headless "+MasonInstall jdtls java-debug-adapter java-test prettier google-java-format stylua" +qall 2>/dev/null || true
 fi
 
 echo "✅ Instalación completada."

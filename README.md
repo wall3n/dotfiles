@@ -1,7 +1,7 @@
 # 🔧 Dotfiles
 
 Configuración personal para macOS y Linux, gestionada con **[Chezmoi](https://www.chezmoi.io/)**.
-Diseñada para ser rápida, moderna y estéticamente agradable (Catppuccin Mocha Theme).
+Diseñada para ser rápida, moderna y estéticamente agradable (Gruvbox Dark Hard Theme).
 
 ![OS](https://img.shields.io/badge/OS-macOS%20%7C%20Linux-white?logo=apple)
 ![Manager](https://img.shields.io/badge/Manage-Chezmoi-blue)

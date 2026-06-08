@@ -35,6 +35,13 @@ return {
         "eslint", -- ESLint
       },
       automatic_installation = true,
+      -- mason-lspconfig v2 auto-activa (vim.lsp.enable) TODOS los servidores de
+      -- Mason. jdtls debe quedar excluido: lo gestiona nvim-jdtls con una
+      -- invocación propia. Si no, arrancan dos instancias de jdtls que chocan
+      -- en el workspace y la segunda muere con "exit code 13".
+      automatic_enable = {
+        exclude = { "jdtls" },
+      },
     },
   },
 

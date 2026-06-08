@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+# keys — keybinding cheatsheet for Nvim, Tmux, i3 (and shell)
+# OS-aware: i3 section shows on Linux only (i3 is X11/Linux-only).
+# Usage:
+#   keys            # show all relevant sections for this OS
+#   keys nvim       # only Neovim
+#   keys tmux       # only Tmux
+#   keys i3         # only i3 (Linux)
+#   keys shell      # only shell aliases/bindings
+set -euo pipefail
+
+# ---- OS detection ----------------------------------------------------------
+case "$(uname -s)" in
+  Darwin) OS="mac" ;;
+  Linux)  OS="linux" ;;
+  *)      OS="other" ;;
+esac
+
+# ---- which sections to print ----------------------------------------------
+WHAT="${1:-all}"
+
+# ---- cheatsheet sections (generated from the actual configs) ---------------
+nvim_sheet() {
+cat <<'EOF'
+# 󰕷  Neovim  —  leader = `Space`
+
+## Navegación (ThePrimeagen)
+| Key            | Action                          |
+|----------------|---------------------------------|
+| `J` / `K` (v)  | Mover selección abajo / arriba  |
+| `J` (n)        | Join líneas sin mover cursor    |
+| `<C-d>`/`<C-u>`| Scroll abajo / arriba centrado  |
+| `n` / `N`      | Sig./Ant. resultado centrado    |
+| `<leader>p` (x)| Pegar sin perder buffer         |
+| `<leader>y`    | Copiar al clipboard sistema     |
+| `<leader>Y`    | Copiar línea al clipboard       |
+| `<leader>d`    | Borrar sin contaminar registro  |
+| `<leader>rw`   | Reemplazar palabra bajo cursor  |
+| `<leader>cx`   | chmod +x archivo actual         |
+| `<leader>ec`   | Editar config nvim              |
+
+## Splits & ventanas
+| Key            | Action                          |
+|----------------|---------------------------------|
+| `<leader>sv`   | Split vertical                  |
+| `<leader>sh`   | Split horizontal                |
+| `<leader>se`   | Igualar tamaño splits           |
+| `<leader>sx`   | Cerrar split actual             |
+| `<C-h/j/k/l>`  | Mover entre splits              |
+
+## Tabs / Buffers / Quickfix
+| Key            | Action                          |
+|----------------|---------------------------------|
+| `<leader>to/tx`| Nueva / Cerrar tab              |
+| `<leader>tn/tp`| Siguiente / Anterior tab        |
+| `<leader>bd`   | Cerrar buffer                   |
+| `[b` / `]b`    | Buffer anterior / siguiente     |
+| `[q` / `]q`    | Quickfix anterior / siguiente   |
+| `[l` / `]l`    | Location list ant. / sig.       |
+
+## Grupos which-key (pulsa `<leader>` y espera)
+| Prefix         | Grupo                           |
+|----------------|---------------------------------|
+| `<leader>f`    | Buscar / Telescope              |
+| `<leader>g`    | Git                             |
+| `<leader>l`    | LSP                             |
+| `<leader>j`    | Java                            |
+| `<leader>ha`   | Harpoon                         |
+| `<leader>s`    | Splits                          |
+| `<leader>t`    | Tabs                            |
+| `<leader>b`    | Buffers                         |
+| `<leader>u`    | Utils                           |
+| `<leader>D`    | Debug                           |
+EOF
+}
+
+tmux_sheet() {
+cat <<'EOF'
+#   Tmux  —  prefix = C-a
+
+## Sesiones / config
+| Key              | Action                        |
+|------------------|-------------------------------|
+| `prefix r`       | Recargar config               |
+| `prefix f`       | tmux-sessionizer              |
+| `prefix N`       | Nueva sesión (prompt nombre)  |
+| `prefix X`       | Matar sesión (confirma)       |
+
+## Ventanas / paneles
+| Key              | Action                        |
+|------------------|-------------------------------|
+| `prefix c`       | Nueva ventana (mismo path)    |
+| `prefix \|`      | Split vertical                |
+| `prefix -`       | Split horizontal              |
+| `prefix h/j/k/l` | Mover entre paneles           |
+| `prefix H/J/K/L` | Redimensionar panel (5)       |
+| `prefix m`       | Zoom panel (maximizar)        |
+| `prefix ^`       | Última ventana                |
+| `prefix < / >`   | Mover ventana izq / der       |
+
+## Copy-mode (vi)
+| Key              | Action                        |
+|------------------|-------------------------------|
+| `v` / `V`        | Selección / línea             |
+| `C-v`            | Selección rectangular         |
+| `y`              | Copiar y salir                |
+| `H` / `L`        | Inicio / fin de línea         |
+EOF
+}
+
+i3_sheet() {
+cat <<'EOF'
+#   i3wm  —  mod = Super (Mod4)
+
+## Lanzar / cerrar
+| Key                | Action                      |
+|--------------------|-----------------------------|
+| `mod+Return`       | Terminal                    |
+| `mod+d`            | rofi (drun)                 |
+| `mod+q`            | Cerrar ventana              |
+| `mod+Shift+x`      | Bloquear pantalla           |
+| `mod+Shift+v`      | pavucontrol                 |
+| `mod+Shift+r`      | Recargar i3                 |
+| `mod+Shift+e`      | Salir de i3                 |
+
+## Foco / mover
+| Key                | Action                      |
+|--------------------|-----------------------------|
+| `mod+h/j/k/l`      | Mover foco                  |
+| `mod+Shift+h/j/k/l`| Mover ventana               |
+| `mod+b` / `mod+v`  | Split horiz / vert          |
+| `mod+f`            | Fullscreen toggle           |
+| `mod+s/w/e`        | Stacking / Tabbed / Toggle  |
+| `mod+Shift+space`  | Floating toggle             |
+| `mod+space`        | Foco floating <-> tiling    |
+| `mod+r`            | Modo resize                 |
+
+## Workspaces
+| Key                | Action                      |
+|--------------------|-----------------------------|
+| `mod+1..0`         | Ir a workspace 1..10        |
+| `mod+Shift+1..0`   | Mover ventana a workspace   |
+EOF
+}
+
+shell_sheet() {
+cat <<'EOF'
+#   Shell
+
+| Alias / Key      | Action                        |
+|------------------|-------------------------------|
+| `cat`            | bat                           |
+| `keys [seccion]` | Esta cheatsheet               |
+EOF
+}
+
+# ---- pager (glow > bat > less > cat) --------------------------------------
+render() {
+  if command -v glow >/dev/null 2>&1; then
+    glow -p -
+  elif command -v bat >/dev/null 2>&1; then
+    bat --paging=always --language=markdown --style=plain
+  elif command -v less >/dev/null 2>&1; then
+    less -R
+  else
+    cat
+  fi
+}
+
+# ---- compose output --------------------------------------------------------
+build() {
+  case "$WHAT" in
+    nvim)  nvim_sheet ;;
+    tmux)  tmux_sheet ;;
+    i3)    i3_sheet ;;
+    shell) shell_sheet ;;
+    all)
+      nvim_sheet; echo
+      tmux_sheet; echo
+      if [ "$OS" = "linux" ]; then
+        i3_sheet; echo
+      fi
+      shell_sheet
+      ;;
+    *)
+      echo "uso: keys [nvim|tmux|i3|shell|all]" >&2
+      exit 1
+      ;;
+  esac
+}
+
+build | render

@@ -20,12 +20,50 @@ M.setup = function()
         os_config = "win"
     end
 
-    -- Carpeta de datos por proyecto (evita conflictos entre proyectos)
-    local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+    -- Carpeta de datos por proyecto (evita conflictos entre proyectos).
+    -- getcwd() no lleva barra final, así que ":t" da el nombre del propio
+    -- directorio del proyecto. (Antes ":p:h:t" devolvía el directorio PADRE,
+    -- haciendo que todos los proyectos de una misma carpeta compartieran workspace.)
+    local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
     local workspace_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. project_name
 
     -- Ruta al launcher de jdtls
     local launcher = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
+
+    -- Detección dinámica de JDKs instalados (cross-platform).
+    -- Evita rutas hardcodeadas que rompen entre macOS y Linux.
+    local function detect_runtimes()
+        local runtimes = {}
+        local roots
+        if vim.fn.has("mac") == 1 then
+            roots = vim.fn.glob("/Library/Java/JavaVirtualMachines/*/Contents/Home", true, true)
+        else
+            roots = vim.fn.glob("/usr/lib/jvm/*", true, true)
+        end
+        -- JAVA_HOME tiene prioridad si está definido
+        local java_home = os.getenv("JAVA_HOME")
+        if java_home and vim.fn.isdirectory(java_home) == 1 then
+            table.insert(roots, 1, java_home)
+        end
+        for _, path in ipairs(roots) do
+            if vim.fn.isdirectory(path .. "/bin") == 1 then
+                -- jdtls exige nombres tipo "JavaSE-21"; intentamos extraer la versión mayor
+                local release = vim.fn.glob(path .. "/release")
+                local major
+                if release ~= "" then
+                    for line in io.lines(release) do
+                        local v = line:match('JAVA_VERSION="(%d+)')
+                        if v then major = tonumber(v) end
+                    end
+                end
+                local name = major and ("JavaSE-" .. major) or nil
+                if name then
+                    table.insert(runtimes, { name = name, path = path })
+                end
+            end
+        end
+        return runtimes
+    end
 
     -- Configuración del servidor
     local config = {
@@ -60,10 +98,8 @@ M.setup = function()
                 eclipse = { downloadSources = true },
                 configuration = {
                     updateBuildConfiguration = "interactive",
-                    runtimes = {
-                        { name = "JavaSE-17", path = "/usr/lib/jvm/java-17-openjdk-amd64" },
-                        { name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk-amd64" },
-                    },
+                    -- Runtimes detectados en tiempo de ejecución (ver detect_runtimes arriba)
+                    runtimes = detect_runtimes(),
                 },
                 -- Maven
                 maven = { downloadSources = true },
@@ -106,9 +142,23 @@ M.setup = function()
             },
         },
 
-        -- Bundles adicionales (debugger DAP)
+        -- Bundles del debugger (java-debug-adapter) y tests (java-test),
+        -- instalados vía Mason. Necesarios para DAP y ejecución de tests.
         init_options = {
-            bundles = {},
+            bundles = (function()
+                local bundles = {}
+                vim.list_extend(bundles, vim.split(vim.fn.glob(
+                    mason_packages .. "/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar", true), "\n"))
+                vim.list_extend(bundles, vim.split(vim.fn.glob(
+                    mason_packages .. "/java-test/extension/server/*.jar", true), "\n"))
+                -- Excluye los jars que NO son bundles OSGi (rompen jdtls al arrancar):
+                -- el runner empaquetado y el agente de cobertura jacoco.
+                return vim.tbl_filter(function(j)
+                    return j ~= ""
+                        and not j:match("runner%-jar%-with%-dependencies")
+                        and not j:match("jacocoagent")
+                end, bundles)
+            end)(),
         },
 
         on_attach = function(client, bufnr)
@@ -152,6 +202,18 @@ M.setup = function()
 
     jdtls.start_or_attach(config)
 end
+
+-- Arranca jdtls en cada buffer Java.
+-- NOTA: este archivo se 'require'-a por lazy y DEVUELVE la spec de plugins,
+-- por lo que `require(...).setup()` desde fuera no funciona (M no se retorna).
+-- Registramos el autocmd aquí, donde M.setup sí está en alcance.
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("JavaJdtls", { clear = true }),
+    pattern = "java",
+    callback = function()
+        M.setup()
+    end,
+})
 
 -- Declaración del plugin para lazy.nvim
 return {

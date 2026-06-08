@@ -1,26 +1,26 @@
 return {
   -- ============================================================
-  -- COLORSCHEMA: Tokyonight (rendimiento excelente, muy popular)
-  -- Alternativa: catppuccin, rose-pine
+  -- COLORSCHEMA: Gruvbox Dark Hard (tema unificado del repo)
   -- ============================================================
   {
-    "folke/tokyonight.nvim",
+    "ellisonleao/gruvbox.nvim",
     lazy = false,
     priority = 1000,
     opts = {
-      style = "night",
-      transparent = false,
+      contrast = "hard", -- Gruvbox Dark Hard
+      transparent_mode = false,
       terminal_colors = true,
-      styles = {
-        comments = { italic = true },
-        keywords = { italic = true },
-        sidebars = "dark",
-        floats = "dark",
+      italic = {
+        strings = false,
+        comments = true,
+        operators = false,
+        folds = true,
       },
     },
     config = function(_, opts)
-      require("tokyonight").setup(opts)
-      vim.cmd.colorscheme("tokyonight-night")
+      require("gruvbox").setup(opts)
+      vim.o.background = "dark"
+      vim.cmd.colorscheme("gruvbox")
     end,
   },
 
@@ -44,7 +44,7 @@ return {
 
       require("lualine").setup({
         options = {
-          theme = "tokyonight",
+          theme = "gruvbox",
           component_separators = { left = "", right = "" },
           section_separators = { left = "", right = "" },
           globalstatus = true,
