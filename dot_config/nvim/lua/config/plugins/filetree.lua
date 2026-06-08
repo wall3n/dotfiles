@@ -12,6 +12,7 @@ return {
             { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Árbol de archivos" },
             { "<leader>o", "<cmd>Neotree focus<CR>", desc = "Focus árbol de archivos" },
             { "<leader>ge", "<cmd>Neotree git_status<CR>", desc = "Git status en árbol" },
+            { "<leader>jp", "<cmd>Neotree filesystem left reveal<CR>", desc = "Java: explorador de paquetes" },
         },
         config = function()
             require("neo-tree").setup({
