@@ -103,6 +103,17 @@ return {
         end, "Listar carpetas workspace")
       end
 
+      -- on_attach global vía LspAttach (jdtls añade el suyo aparte)
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          on_attach(client, args.buf)
+        end,
+      })
+
+      -- Capacidades por defecto para todos los servidores (API nativa 0.11)
+      vim.lsp.config("*", { capabilities = capabilities })
+
       -- Diagnósticos visual config
       vim.diagnostic.config({
         virtual_text = true,
@@ -127,12 +138,8 @@ return {
         },
       })
 
-      local lspconfig = require("lspconfig")
-
       -- TypeScript / JavaScript
-      lspconfig.ts_ls.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+      vim.lsp.config("ts_ls", {
         settings = {
           typescript = {
             inlayHints = {
@@ -144,31 +151,21 @@ return {
         },
       })
 
-      -- ESLint
-      lspconfig.eslint.setup({
-        capabilities = capabilities,
-        on_attach = function(_, bufnr)
-          on_attach(_, bufnr)
-          -- Auto-fix al guardar
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            buffer = bufnr,
-            command = "EslintFixAll",
-          })
+      -- ESLint: auto-fix al guardar
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client and client.name == "eslint" then
+            vim.api.nvim_create_autocmd("BufWritePre", {
+              buffer = args.buf,
+              command = "EslintFixAll",
+            })
+          end
         end,
       })
 
-      -- HTML, CSS, JSON, YAML, Lua
-      for _, server in ipairs({ "html", "cssls", "jsonls", "yamlls" }) do
-        lspconfig[server].setup({
-          capabilities = capabilities,
-          on_attach = on_attach,
-        })
-      end
-
       -- Lua (con soporte para nvim API)
-      lspconfig.lua_ls.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+      vim.lsp.config("lua_ls", {
         settings = {
           Lua = {
             diagnostics = { globals = { "vim" } },
@@ -177,6 +174,10 @@ return {
           },
         },
       })
+
+      -- mason-lspconfig (automatic_enable) llama a vim.lsp.enable por cada
+      -- servidor instalado. html/cssls/jsonls/yamlls/eslint no necesitan
+      -- config extra: heredan capabilities de "*" y on_attach del LspAttach.
     end,
   },
 
