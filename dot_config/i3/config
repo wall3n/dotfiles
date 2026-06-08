@@ -15,7 +15,7 @@ bindsym $mod+d exec rofi -show drun -show-icons
 bindsym $mod+q kill
 
 # ── Bloquear ventana ─────────────────────────────────────
-bindsym $mod+Shift+x exec betterlockscreen -l dim
+bindsym $mod+Shift+x exec --no-startup-id i3lock-fancy
 
 # ── Gestor de audio ─────────────────────────────────────
 bindsym $mod+Shift+v exec pavucontrol
