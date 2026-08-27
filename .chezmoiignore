@@ -6,3 +6,6 @@ scripts/
 token.txt
 CLAUDE.md
 AUDIT_REPORT.md
+install-packages.sh
+Brewfile
+docs/
