@@ -11,7 +11,10 @@ font-thicken = true
 window-padding-x = 8
 window-padding-y = 6
 window-padding-balance = true
-window-decoration = false
+# Keep the native frame: rounded corners, traffic lights and, most
+# importantly, native fullscreen. `false` makes a borderless window
+# that macOS refuses to fullscreen.
+window-decoration = true
 
 cursor-style = block
 cursor-style-blink = false
@@ -34,7 +37,14 @@ window-save-state = always
 # Required so tmux/nvim receive Alt-<key>. Without this the floax
 # binding (Alt+p) and every other Meta chord silently do nothing.
 macos-option-as-alt = true
-macos-titlebar-style = hidden
+# `hidden` removes the titlebar, so the window has no drag area and no
+# green button. `transparent` keeps the chrome but lets the terminal
+# background come through.
+macos-titlebar-style = transparent
+macos-window-buttons = visible
+
+# Use the real macOS fullscreen (Cmd+Enter or Cmd+Ctrl+F).
+macos-non-native-fullscreen = false
 {{ end -}}
 
 # ─── Keybindings ──────────────────────────────────────────────────
