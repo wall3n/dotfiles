@@ -12,12 +12,29 @@ M.setup = function()
     local mason_packages = vim.fn.stdpath("data") .. "/mason/packages"
     local jdtls_path = mason_packages .. "/jdtls"
 
-    -- Plataforma del sistema operativo
-    local os_config = "linux"
+    -- Plataforma: jdtls trae una carpeta de configuración OSGi por SO **y por
+    -- arquitectura** (config_mac vs config_mac_arm, config_linux vs
+    -- config_linux_arm). Usar la de x86_64 en un Mac ARM arranca la JVM pero
+    -- luego falla al activar bundles (m2e, NoClassDefFoundError) y jdtls muere
+    -- con "exit code 13". Hay que elegir la variante correcta.
+    local os_config
     if vim.fn.has("mac") == 1 then
         os_config = "mac"
     elseif vim.fn.has("win32") == 1 then
         os_config = "win"
+    else
+        os_config = "linux"
+    end
+
+    local arch = vim.uv.os_uname().machine
+    if os_config ~= "win" and (arch == "arm64" or arch == "aarch64") then
+        os_config = os_config .. "_arm"
+    end
+
+    -- Si la carpeta calculada no existe (versiones antiguas de jdtls solo traían
+    -- config_mac / config_linux), cae a la variante sin sufijo.
+    if vim.fn.isdirectory(jdtls_path .. "/config_" .. os_config) == 0 then
+        os_config = os_config:gsub("_arm$", "")
     end
 
     -- Carpeta de datos por proyecto (evita conflictos entre proyectos).
