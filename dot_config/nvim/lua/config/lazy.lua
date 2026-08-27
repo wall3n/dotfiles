@@ -17,6 +17,11 @@ require("lazy").setup("config.plugins", {
     change_detection = {
         notify = false,
     },
+    -- Ningún plugin de esta config necesita luarocks. Sin esto, lazy intenta
+    -- montar hererocks + lua 5.1 en cada :checkhealth y falla con un ERROR.
+    rocks = {
+        enabled = false,
+    },
     performance = {
         rtp = {
             disabled_plugins = {
