@@ -27,7 +27,6 @@ opt.smartcase = true
 -- Visual
 opt.termguicolors = true
 opt.signcolumn = "yes"
-opt.colorcolumn = "120"
 opt.cursorline = true
 opt.scrolloff = 8
 opt.sidescrolloff = 8

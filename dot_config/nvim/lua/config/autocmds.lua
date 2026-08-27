@@ -69,3 +69,33 @@ autocmd("FileType", {
         vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = true, silent = true })
     end,
 })
+
+
+-- ============================================================
+-- COLORCOLUMN POR TIPO DE ARCHIVO
+-- ============================================================
+local ccGroup = augroup("ColorColumn", { clear = true })
+
+autocmd("FileType", {
+    group = ccGroup,
+    pattern = { "java", "xml" },
+    callback = function() vim.opt_local.colorcolumn = "120" end,
+})
+
+autocmd("FileType", {
+    group = ccGroup,
+    pattern = { "javascript", "typescript", "typescriptreact", "javascriptreact",
+                "css", "scss", "html", "lua", "c", "cpp", "python", "sh", "bash" },
+    callback = function() vim.opt_local.colorcolumn = "100" end,
+})
+
+autocmd("FileType", {
+    group = ccGroup,
+    pattern = { "markdown", "text", "gitcommit", "help" },
+    callback = function()
+        vim.opt_local.colorcolumn = ""
+        vim.opt_local.wrap = true
+        vim.opt_local.linebreak = true
+        vim.opt_local.spell = true
+    end,
+})
