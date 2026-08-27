@@ -1,0 +1,307 @@
+#!/usr/bin/env bash
+# ==============================================================================
+#  hey — what is installed on this machine, and how do I drive it?
+#
+#  Usage:
+#    hey              interactive browser (needs fzf)
+#    hey <query>      jump straight to the entries matching <query>
+#    hey --list       plain list, no fzf, pipe-friendly
+#    hey --apps       only the installed-tools inventory
+#    hey --keys       only the keybindings
+#    hey --missing    tools this sheet knows about but are NOT installed
+# ==============================================================================
+set -uo pipefail
+
+# ---- colours ----------------------------------------------------------------
+if [ -t 1 ]; then
+    R=$'\033[0m'; B=$'\033[1m'; DIM=$'\033[2m'
+    ORANGE=$'\033[38;5;215m'; GREEN=$'\033[38;5;114m'; PURPLE=$'\033[38;5;141m'
+    BLUE=$'\033[38;5;109m';   YELLOW=$'\033[38;5;222m'; GREY=$'\033[38;5;245m'
+else
+    R=''; B=''; DIM=''; ORANGE=''; GREEN=''; PURPLE=''; BLUE=''; YELLOW=''; GREY=''
+fi
+
+# ==============================================================================
+#  THE SHEET
+#  One record per line:  SCOPE <TAB> GROUP <TAB> KEY-OR-COMMAND <TAB> WHAT IT DOES
+#  Records whose SCOPE is APP are only shown when the binary is on $PATH.
+# ==============================================================================
+sheet() {
+cat <<'EOF'
+APP	Shell	eza	Listado de ficheros moderno · ls / l / lt / ltree
+APP	Shell	bat	cat con sintaxis y paginado · alias: cat
+APP	Shell	fd	find rápido y con defaults sanos
+APP	Shell	ripgrep	grep recursivo ultrarrápido · comando: rg
+APP	Shell	fzf	Fuzzy finder · C-r historial · C-t ficheros · A-c cd
+APP	Shell	zoxide	cd que aprende · z <parte-del-nombre> · zi para elegir
+APP	Shell	atuin	Historial en SQLite, sincronizable · C-r
+APP	Shell	starship	Prompt · configurado en ~/.config/starship.toml
+APP	Shell	direnv	Variables de entorno por proyecto · direnv allow
+APP	Shell	tree	Árbol de directorios
+APP	Shell	htop	Monitor de procesos interactivo
+APP	Shell	hyperfine	Benchmark de comandos de terminal
+APP	Shell	wget	Descargas por HTTP
+APP	Shell	glow	Renderiza Markdown en el terminal
+APP	Shell	stow	Enlaces simbólicos para dotfiles (legacy, usa chezmoi)
+APP	Datos	jq	Procesar y consultar JSON · jq '.campo' fichero.json
+APP	Datos	yq	Lo mismo que jq pero para YAML/XML/TOML
+APP	Git	git	Control de versiones
+APP	Git	lazygit	TUI de git · alias: lg
+APP	Git	delta	Diffs con color y números de línea (pager de git)
+APP	Git	gh	CLI de GitHub · gh pr create · gh repo clone
+APP	Git	gitleaks	Busca secretos filtrados en el repo
+APP	Git	chezmoi	Gestor de dotfiles · chezmoi apply / diff / cd
+APP	Versiones	mise	Gestor de versiones (Rust) · java, node, python, go, rust...
+APP	Versiones	sdk	SDKMAN, ecosistema JVM · kotlin, scala, sbt
+APP	Editor	nvim	Neovim · alias: v / vi / vim
+APP	Editor	tmux	Multiplexor de terminal
+APP	Contenedores	docker	Contenedores · docker compose up
+APP	Contenedores	colima	Runtime de contenedores para macOS (reemplaza Docker Desktop)
+APP	Contenedores	qemu	Emulador de máquinas
+APP	Java	mvn	Maven · mvn clean install
+APP	Java	java	JRE/JDK actual · gestionado por mise
+APP	Node	node	Runtime de Node · gestionado por mise
+APP	Node	pnpm	Gestor de paquetes rápido
+APP	Node	npm	Gestor de paquetes de Node
+APP	Cloud	supabase	CLI de Supabase · supabase start
+APP	Sistemas	gdb	Depurador GNU
+APP	Sistemas	llvm-objdump	Desensamblador
+APP	Sistemas	graphviz	Grafos desde texto · comando: dot
+APP	Sistemas	cpufetch	Info de la CPU
+
+SHELL	Historial	C-r	Buscar en el historial (atuin)
+SHELL	Ficheros	C-t	Insertar ruta de fichero (fzf)
+SHELL	Ficheros	A-c	Entrar en un directorio (fzf)
+SHELL	Navegación	z <nombre>	Saltar a un directorio conocido (zoxide)
+SHELL	Navegación	zi	Elegir directorio con fzf (zoxide)
+SHELL	Navegación	projects	Elegir proyecto en ~/workspaces con fzf
+SHELL	Edición	C-a / C-e	Inicio / fin de línea
+SHELL	Edición	C-w	Borrar la palabra anterior
+SHELL	Edición	C-u	Borrar hasta el inicio de la línea
+SHELL	Edición	→ (flecha)	Aceptar la sugerencia de autosuggestions
+SHELL	Git	lg	Abrir lazygit
+SHELL	Git	gst / gdiff / gl	status / diff / log
+SHELL	Git	gc "msg"	Commit con mensaje
+SHELL	Git	gps / gpl	push / pull
+SHELL	Ayuda	hey	Esta chuleta
+
+TMUX	Prefix	C-a	Prefix principal
+TMUX	Prefix	C-b	Prefix secundario
+TMUX	Config	<prefix> r	Recargar la configuración
+TMUX	Config	<prefix> ?	Abrir esta chuleta
+TMUX	Plugins	<prefix> I	Instalar los plugins declarados (TPM)
+TMUX	Plugins	<prefix> U	Actualizar plugins
+TMUX	Sesiones	<prefix> f	tmux-sessionizer: buscar proyecto y abrir sesión
+TMUX	Sesiones	<prefix> N	Nueva sesión con nombre
+TMUX	Sesiones	<prefix> X	Matar la sesión actual
+TMUX	Sesiones	<prefix> s	Listar sesiones
+TMUX	Sesiones	<prefix> d	Desconectar (detach)
+TMUX	Ventanas	<prefix> c	Nueva ventana en el directorio actual
+TMUX	Ventanas	<prefix> ,	Renombrar ventana
+TMUX	Ventanas	<prefix> 1..9	Ir a la ventana N
+TMUX	Ventanas	<prefix> ^	Última ventana
+TMUX	Ventanas	<prefix> < / >	Mover la ventana a izquierda / derecha
+TMUX	Panes	<prefix> |	Split vertical
+TMUX	Panes	<prefix> -	Split horizontal
+TMUX	Panes	C-h C-j C-k C-l	Moverse entre panes Y splits de nvim
+TMUX	Panes	<prefix> H J K L	Redimensionar el pane
+TMUX	Panes	<prefix> m	Maximizar / restaurar el pane
+TMUX	Panes	<prefix> x	Cerrar el pane
+TMUX	Panes	A-p	Pane flotante (floax)
+TMUX	Copiar	<prefix> [	Entrar en modo copia
+TMUX	Copiar	v / y	Iniciar selección / copiar al portapapeles
+TMUX	Copiar	C-v	Selección rectangular
+TMUX	Copiar	<prefix> p	Pegar desde el portapapeles del sistema
+
+NVIM	Leader	<Space>	Tecla leader
+NVIM	Ficheros	<leader>ff	Buscar ficheros (Telescope)
+NVIM	Ficheros	<leader>fg	Buscar texto en el proyecto (live grep)
+NVIM	Ficheros	<leader>fb	Buffers abiertos
+NVIM	Ficheros	<leader>fr	Ficheros recientes
+NVIM	Ficheros	<leader>fj	Buscar clases Java
+NVIM	Ficheros	-	Oil: editar el directorio como un buffer
+NVIM	Ficheros	<leader>eo	Oil en ventana flotante
+NVIM	Ficheros	<leader>e	Árbol de ficheros (neo-tree)
+NVIM	Marcadores	<leader>ha	Añadir fichero a harpoon
+NVIM	Marcadores	<leader>hh	Menú de harpoon
+NVIM	Marcadores	<leader>1..4	Saltar al fichero N de harpoon
+NVIM	Salto	s	Flash: saltar a cualquier sitio visible
+NVIM	Salto	S	Flash: seleccionar nodo treesitter
+NVIM	Navegación	<C-d> / <C-u>	Media página abajo / arriba, centrado
+NVIM	Navegación	n / N	Siguiente / anterior coincidencia, centrada
+NVIM	Navegación	C-h C-j C-k C-l	Moverse entre splits Y panes de tmux
+NVIM	Edición	J / K (visual)	Mover la selección abajo / arriba
+NVIM	Edición	<leader>p	Pegar sin perder el registro
+NVIM	Edición	<leader>y	Copiar al portapapeles del sistema
+NVIM	Edición	<leader>d	Borrar sin tocar los registros
+NVIM	Edición	<leader>rw	Renombrar la palabra bajo el cursor (en el fichero)
+NVIM	Buscar/Reemp	<leader>sr	grug-far: buscar y reemplazar en el proyecto
+NVIM	Buscar/Reemp	<leader>sw	grug-far con la palabra bajo el cursor
+NVIM	LSP	gd	Ir a la definición
+NVIM	LSP	gr	Ver referencias
+NVIM	LSP	K	Documentación flotante
+NVIM	LSP	<leader>ca	Code actions
+NVIM	LSP	<leader>rn	Renombrar símbolo (en todo el proyecto)
+NVIM	LSP	<leader>lF	Formatear el buffer
+NVIM	LSP	<leader>lm	Abrir Mason
+NVIM	LSP	[d / ]d	Diagnóstico anterior / siguiente
+NVIM	Java	<leader>jo	Organizar imports
+NVIM	Java	<leader>jv / jc	Extraer variable / constante
+NVIM	Java	<leader>jt / jT	Ejecutar test del método / de la clase
+NVIM	Git	<leader>gs	Estado de git (fugitive)
+NVIM	Git	]c / [c	Siguiente / anterior hunk
+NVIM	Splits	<leader>sv / sh	Split vertical / horizontal
+NVIM	Splits	<leader>sx	Cerrar el split
+NVIM	Buffers	<leader>bd	Cerrar el buffer
+NVIM	Buffers	[b / ]b	Buffer anterior / siguiente
+NVIM	Otros	<leader>uu	Undotree
+NVIM	Otros	<leader>ft	Listar TODOs del proyecto
+NVIM	Otros	<leader>ec	Editar la config de nvim
+NVIM	Otros	:Lazy	Gestor de plugins
+NVIM	Otros	:checkhealth	Diagnóstico de la instalación
+
+GHOSTTY	Pestañas	Cmd-t	Nueva pestaña
+GHOSTTY	Pestañas	Cmd-1..9	Ir a la pestaña N
+GHOSTTY	Splits	Cmd-d	Split derecha
+GHOSTTY	Splits	Cmd-Shift-d	Split abajo
+GHOSTTY	Splits	Cmd-Alt-flechas	Moverse entre splits
+GHOSTTY	Config	Cmd-,	Abrir la configuración
+GHOSTTY	Config	Cmd-Shift-,	Recargar la configuración
+EOF
+}
+
+# ---- is this tool actually installed? ---------------------------------------
+# A few records name an alias or a shell function rather than a binary.
+is_installed() {
+    case "$1" in
+        eza|bat|fd|fzf|zoxide|atuin|starship|direnv|tree|htop|hyperfine|wget|glow|stow) command -v "$1" >/dev/null 2>&1 ;;
+        ripgrep)       command -v rg >/dev/null 2>&1 ;;
+        qemu)          command -v qemu-img >/dev/null 2>&1 || command -v qemu-system-aarch64 >/dev/null 2>&1 ;;
+        graphviz)      command -v dot >/dev/null 2>&1 ;;
+        llvm-objdump)  command -v llvm-objdump >/dev/null 2>&1 || command -v objdump >/dev/null 2>&1 ;;
+        sdk)           [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ] ;;
+        lg)            command -v lazygit >/dev/null 2>&1 ;;
+        *)             command -v "$1" >/dev/null 2>&1 ;;
+    esac
+}
+
+# ---- filter the sheet down to what exists on this machine -------------------
+resolved() {
+    local scope group key desc
+    while IFS=$'\t' read -r scope group key desc; do
+        [ -z "${scope:-}" ] && continue
+        if [ "$scope" = "APP" ]; then
+            is_installed "$key" || continue
+        fi
+        printf '%s\t%s\t%s\t%s\n' "$scope" "$group" "$key" "$desc"
+    done < <(sheet)
+}
+
+missing() {
+    local scope group key desc
+    while IFS=$'\t' read -r scope group key desc; do
+        [ "${scope:-}" = "APP" ] || continue
+        is_installed "$key" && continue
+        printf '%s\t%s\t%s\n' "$group" "$key" "$desc"
+    done < <(sheet)
+}
+
+# ---- pretty-print -----------------------------------------------------------
+colour_for() {
+    case "$1" in
+        APP)     printf '%s' "$YELLOW" ;;
+        TMUX)    printf '%s' "$ORANGE" ;;
+        NVIM)    printf '%s' "$GREEN"  ;;
+        GHOSTTY) printf '%s' "$PURPLE" ;;
+        SHELL)   printf '%s' "$BLUE"   ;;
+        *)       printf '%s' "$R"      ;;
+    esac
+}
+
+# printf's %-18s pads by BYTES, so accented group names ("Navegación",
+# "Edición") came out a column short. bash's ${#var} counts characters in a
+# UTF-8 locale, so pad by hand instead.
+pad() {
+    local str="$1" width="$2" n=${#1}
+    printf '%s' "$str"
+    while [ "$n" -lt "$width" ]; do printf ' '; n=$((n + 1)); done
+}
+
+render() {
+    local scope group key desc c last=""
+    while IFS=$'\t' read -r scope group key desc; do
+        c="$(colour_for "$scope")"
+        if [ "$scope" != "$last" ]; then
+            printf '\n%s%s══ %s %s\n' "$B" "$c" "$scope" "$R"
+            last="$scope"
+        fi
+        printf '  %s%s%s %s%s%s %s\n' \
+            "$DIM" "$(pad "$group" 16)" "$R" \
+            "$c$B" "$(pad "$key" 22)" "$R" \
+            "$desc"
+    done
+}
+
+# ---- entry point ------------------------------------------------------------
+case "${1:---interactive}" in
+    --list|-l)
+        resolved | render
+        ;;
+    --apps|-a)
+        resolved | awk -F'\t' '$1=="APP"' | render
+        ;;
+    --keys|-k)
+        resolved | awk -F'\t' '$1!="APP"' | render
+        ;;
+    --missing|-m)
+        out="$(missing)"
+        if [ -z "$out" ]; then
+            printf '%sTodo lo que conoce esta chuleta está instalado.%s\n' "$GREEN" "$R"
+        else
+            printf '%s%sNo instalado:%s\n' "$B" "$YELLOW" "$R"
+            printf '%s\n' "$out" | while IFS=$'\t' read -r group key desc; do
+                printf '  %s%s%s %s%s%s %s\n' \
+                    "$DIM" "$(pad "$group" 14)" "$R" \
+                    "$B" "$(pad "$key" 20)" "$R" \
+                    "$desc"
+            done
+        fi
+        ;;
+    --help|-h)
+        sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'
+        ;;
+    *)
+        query=""
+        [ "${1:-}" != "--interactive" ] && query="$*"
+
+        if ! command -v fzf >/dev/null 2>&1; then
+            resolved | render
+            exit 0
+        fi
+
+        # Field 1 is the raw shortcut (hidden from the display, used by Enter);
+        # field 2 is the rendered, padded line that fzf actually shows.
+        resolved \
+        | while IFS=$'\t' read -r scope group key desc; do
+              c="$(colour_for "$scope")"
+              printf '%s\t%s%s%s %s%s%s %s%s%s %s\n' \
+                  "$key" \
+                  "$c" "$(pad "$scope" 8)" "$R" \
+                  "$DIM" "$(pad "$group" 14)" "$R" \
+                  "$B" "$(pad "$key" 24)" "$R" \
+                  "$desc"
+          done \
+        | fzf --ansi \
+              --delimiter=$'\t' \
+              --with-nth=2 \
+              --query="$query" \
+              --height=100% \
+              --layout=reverse \
+              --border=rounded \
+              --info=inline \
+              --prompt='hey ❯ ' \
+              --header=$'Enter copia el atajo al portapapeles · Esc sale\n' \
+              --preview-window=hidden \
+              --bind='enter:execute-silent(printf "%s" {1} | clipcopy 2>/dev/null || true)+abort'
+        ;;
+esac
