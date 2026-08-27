@@ -1,3 +1,21 @@
+-- ============================================================
+-- SERVIDORES LSP ACTIVOS
+-- Fuente única de verdad: mason-lspconfig los instala y los activa.
+-- Añadir uno aquí es lo único necesario para habilitarlo.
+-- (jdtls se excluye a propósito: lo arranca nvim-jdtls.)
+-- ============================================================
+local SERVERS = {
+  "ts_ls",    -- TypeScript / JavaScript
+  "html",     -- HTML
+  "cssls",    -- CSS
+  "jsonls",   -- JSON
+  "lua_ls",   -- Lua (config de nvim)
+  "yamlls",   -- YAML
+  "eslint",   -- ESLint
+  "clangd",   -- C / C++ / ensamblador
+  "marksman", -- Markdown
+}
+
 return {
   -- ============================================================
   -- MASON: Gestor de LSP servers, formatters, linters
@@ -24,24 +42,17 @@ return {
     "mason-org/mason-lspconfig.nvim",
     dependencies = { "mason-org/mason.nvim" },
     opts = {
-      -- NOTA: jdtls NO va aquí, se gestiona con nvim-jdtls
-      ensure_installed = {
-        "ts_ls",  -- TypeScript/JavaScript
-        "html",   -- HTML
-        "cssls",  -- CSS
-        "jsonls", -- JSON
-        "lua_ls", -- Lua
-        "yamlls", -- YAML
-        "eslint", -- ESLint
-      },
-      automatic_installation = true,
-      -- mason-lspconfig v2 auto-activa (vim.lsp.enable) TODOS los servidores de
-      -- Mason. jdtls debe quedar excluido: lo gestiona nvim-jdtls con una
-      -- invocación propia. Si no, arrancan dos instancias de jdtls que chocan
-      -- en el workspace y la segunda muere con "exit code 13".
-      automatic_enable = {
-        exclude = { "jdtls" },
-      },
+      -- Lista única y explícita de servidores. jdtls NO va aquí: lo gestiona
+      -- nvim-jdtls con su propia invocación.
+      ensure_installed = SERVERS,
+      -- Desactivado a propósito: con automatic_installation, mason-lspconfig
+      -- instala un servidor por cada filetype que abras, y la lista crece sola.
+      automatic_installation = false,
+      -- mason-lspconfig v2 llama a vim.lsp.enable() por cada paquete de Mason
+      -- que tenga mapeo lspconfig. Eso activaba servidores que no usamos e
+      -- incluso formateadores (stylua), generando warnings de "config not found".
+      -- Con una lista explícita solo se activa lo que está en SERVERS.
+      automatic_enable = SERVERS,
     },
   },
 
