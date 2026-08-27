@@ -3,7 +3,7 @@ return {
   -- MASON: Gestor de LSP servers, formatters, linters
   -- ============================================================
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     cmd = "Mason",
     keys = { { "<leader>lm", "<cmd>Mason<CR>", desc = "Abrir Mason" } },
     build = ":MasonUpdate",
@@ -21,8 +21,8 @@ return {
 
   -- Bridge entre mason y lspconfig
   {
-    "williamboman/mason-lspconfig.nvim",
-    dependencies = { "williamboman/mason.nvim" },
+    "mason-org/mason-lspconfig.nvim",
+    dependencies = { "mason-org/mason.nvim" },
     opts = {
       -- NOTA: jdtls NO va aquí, se gestiona con nvim-jdtls
       ensure_installed = {
@@ -52,8 +52,8 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
+      "mason-org/mason.nvim",
+      "mason-org/mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp",
       {
         "folke/lazydev.nvim",
