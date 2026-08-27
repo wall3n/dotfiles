@@ -1,6 +1,0 @@
-shell-integration = zsh
-font-size = 13
-mouse-hide-while-typing = true
-window-decoration = false
-font-family = "JetBrainsMono Nerd Font"
-theme = Gruvbox Dark Hard
