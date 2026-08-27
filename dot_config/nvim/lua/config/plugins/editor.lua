@@ -110,19 +110,18 @@ return {
   },
 
   -- ============================================================
-  -- SPECTRE: Búsqueda y reemplazo global en el proyecto
+  -- GRUG-FAR: Búsqueda y reemplazo global en el proyecto
   -- (Muy útil para refactoring en proyectos enterprise)
   -- ============================================================
   {
-    "nvim-pack/nvim-spectre",
-    build = false,
-    cmd = "Spectre",
+    "MagicDuck/grug-far.nvim",
+    cmd = "GrugFar",
     keys = {
-      { "<leader>sr", function() require("spectre").open() end,                              desc = "Spectre: buscar/reemplazar" },
-      { "<leader>sw", function() require("spectre").open_visual({ select_word = true }) end, desc = "Spectre: buscar palabra" },
-      { "<leader>sf", function() require("spectre").open_file_search() end,                  desc = "Spectre: buscar en archivo" },
+      { "<leader>sr", function() require("grug-far").open() end,                        desc = "Buscar/reemplazar en proyecto" },
+      { "<leader>sw", function() require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } }) end, mode = { "n", "x" }, desc = "Buscar/reemplazar palabra" },
+      { "<leader>sf", function() require("grug-far").open({ prefills = { paths = vim.fn.expand("%") } }) end,        desc = "Buscar/reemplazar en archivo" },
     },
-    opts = { open_cmd = "noswapfile vnew" },
+    opts = { headerMaxWidth = 80 },
   },
 
   -- ============================================================
