@@ -1,0 +1,21 @@
+# OS / editor noise
+*~
+.DS_Store
+.idea/
+*.swp
+
+# Local-only env and secrets
+.env.local
+.envrc.local
+
+# AI assistant files, ignored globally by choice.
+# Trade-off: for a hackathon repo you often WANT to commit CLAUDE.md/AGENTS.md
+# (judges and teammates read them). These stay ignored, so in that case use:
+#     git add -f CLAUDE.md AGENTS.md
+# or delete the lines below.
+AGENTS.md
+CLAUDE.md
+.claude
+
+# University assignment statements — never pushed to a public repo
+ENUNCIADO.md

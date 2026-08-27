@@ -1,0 +1,79 @@
+[user]
+	name = Francisco Moreno Sánchez
+	email = franmoreno1506@gmail.com
+
+[core]
+	excludesfile = ~/.gitignore_global
+	pager = delta
+	# Native filesystem monitor: makes `git status` near-instant on big repos.
+	fsmonitor = true
+	untrackedCache = true
+
+[init]
+	defaultBranch = main
+
+[push]
+	# `git push` on a new branch just works, no --set-upstream dance.
+	autoSetupRemote = true
+	recurseSubmodules = check
+
+[pull]
+	rebase = true
+
+[rebase]
+	autoStash = true
+	autoSquash = true
+
+[fetch]
+	prune = true
+	pruneTags = true
+
+[rerere]
+	# Remembers how you resolved a conflict and replays it next time.
+	enabled = true
+	autoUpdate = true
+
+[diff]
+	algorithm = histogram
+	colorMoved = default
+	# Show the enclosing function/class in hunk headers for these languages.
+	renames = copies
+
+[merge]
+	conflictStyle = zdiff3
+
+[commit]
+	verbose = true
+	gpgSign = false
+
+[branch]
+	sort = -committerdate
+
+[tag]
+	sort = -version:refname
+
+[column]
+	ui = auto
+
+[help]
+	autocorrect = prompt
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	line-numbers = true
+	side-by-side = false
+	syntax-theme = gruvbox-dark
+	hyperlinks = true
+
+[alias]
+	# Compact graph log
+	lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
+	# Undo the last commit but keep the changes staged
+	undo = reset --soft HEAD~1
+	# What am I about to push?
+	unpushed = log @{u}.. --oneline
+	# Branches sorted by most recent activity
+	recent = branch --sort=-committerdate --format='%(committerdate:relative)%09%(refname:short)'
