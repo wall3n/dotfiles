@@ -125,17 +125,24 @@ return {
   },
 
   -- ============================================================
-  -- LEAP: Navegación super rápida por el texto (reemplaza easymotion)
+  -- FLASH: Salto rápido por el texto (sustituye a leap)
+  -- Mejora sobre leap: etiqueta también f/t/F/T y las búsquedas con /
   -- ============================================================
   {
-    url = "https://codeberg.org/andyg/leap.nvim",
+    "folke/flash.nvim",
     event = "VeryLazy",
-    config = function()
-      -- Nueva API de mappings (no deprecated)
-      vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap-forward)")
-      vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap-backward)")
-      vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)")
-    end,
+    opts = {
+      modes = {
+        char = { jump_labels = true },
+      },
+    },
+    keys = {
+      { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash: saltar" },
+      { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash: seleccionar nodo treesitter" },
+      { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Flash: operador remoto" },
+      { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end,  desc = "Flash: buscar treesitter" },
+      { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Flash: alternar en búsqueda" },
+    },
   },
   -- ============================================================
   -- STAY-IN-PLACE: Mantener posición al indentar
