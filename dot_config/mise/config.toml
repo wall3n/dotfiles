@@ -1,0 +1,27 @@
+# ==============================================================================
+#  mise — one version manager for every runtime (written in Rust)
+#  Replaces nvm / fnm / pyenv / rbenv / gvm and (for plain JDKs) SDKMAN.
+#
+#  Per-project override:  mise use java@17 node@20   -> writes ./mise.toml
+#  Legacy files are honoured too (.nvmrc, .java-version, .python-version).
+# ==============================================================================
+
+[tools]
+java   = "temurin-21"   # LTS, matches the JavaSE-21 runtime declared for jdtls
+node   = "lts"
+python = "3.13"
+
+[settings]
+# Honour .nvmrc / .java-version / .python-version left by other tools
+idiomatic_version_file_enable_tools = ["node", "java", "python"]
+
+# Install a missing version automatically when a project asks for it
+not_found_auto_install = true
+
+# Verify checksums / signatures on download
+lockfile = true
+
+[settings.status]
+# Warn when a directory pins tool versions that are not installed.
+# Valid values: never | always | if_other_versions_installed
+missing_tools = "always"
