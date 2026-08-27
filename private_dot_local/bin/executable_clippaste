@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Portable clipboard paste: writes the system clipboard to stdout.
+set -euo pipefail
+
+if command -v pbpaste >/dev/null 2>&1; then
+    exec pbpaste
+elif [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-paste >/dev/null 2>&1; then
+    exec wl-paste --no-newline
+elif command -v xclip >/dev/null 2>&1; then
+    exec xclip -selection clipboard -out
+elif command -v xsel >/dev/null 2>&1; then
+    exec xsel --clipboard --output
+elif command -v tmux >/dev/null 2>&1 && [ -n "${TMUX:-}" ]; then
+    exec tmux save-buffer -
+else
+    echo "clippaste: no clipboard backend found" >&2
+    exit 1
+fi
