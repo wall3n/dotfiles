@@ -74,3 +74,10 @@ if vim.lsp.log and vim.lsp.log.set_level then
 else
     vim.lsp.set_log_level("OFF")
 end
+
+-- Proveedores de lenguaje que no usamos. Sin esto :checkhealth avisa por cada
+-- uno (perl, ruby, python-host, node-host) y nvim los busca en cada arranque.
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
