@@ -11,9 +11,13 @@ return {
       require("nvim-treesitter.configs").setup({
         ensure_installed = {
           "java", "javascript", "typescript", "tsx",
-          "html", "css", "json", "yaml", "xml",
-          "lua", "bash", "markdown", "markdown_inline",
+          "html", "css", "json", "jsonc", "yaml", "toml", "xml",
+          "lua", "luadoc", "bash", "markdown", "markdown_inline",
           "regex", "sql", "dockerfile",
+          -- Sistemas / universidad
+          "c", "cpp", "python", "go", "rust", "make", "cmake", "asm",
+          -- Meta: necesarios para :checkhealth y para editar la propia config
+          "vim", "vimdoc", "query", "diff", "gitcommit", "gitignore",
         },
         auto_install = true,
         highlight = {
