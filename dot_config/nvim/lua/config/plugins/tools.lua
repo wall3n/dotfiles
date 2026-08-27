@@ -27,4 +27,28 @@ return {
       },
     },
   },
+
+  -- ============================================================
+  -- VIM-TMUX-NAVIGATOR: C-h/j/k/l cruza la frontera nvim <-> tmux
+  -- Sin esto, al llegar al borde de un split de nvim el cursor se queda
+  -- atascado en lugar de saltar al pane de tmux contiguo.
+  -- Necesita el plugin gemelo en tmux.conf (christoomey/vim-tmux-navigator).
+  -- ============================================================
+  {
+    "christoomey/vim-tmux-navigator",
+    cmd = {
+      "TmuxNavigateLeft",
+      "TmuxNavigateDown",
+      "TmuxNavigateUp",
+      "TmuxNavigateRight",
+      "TmuxNavigatePrevious",
+    },
+    keys = {
+      { "<C-h>", "<cmd>TmuxNavigateLeft<CR>",     desc = "Ir a split/pane izquierda" },
+      { "<C-j>", "<cmd>TmuxNavigateDown<CR>",     desc = "Ir a split/pane abajo" },
+      { "<C-k>", "<cmd>TmuxNavigateUp<CR>",       desc = "Ir a split/pane arriba" },
+      { "<C-l>", "<cmd>TmuxNavigateRight<CR>",    desc = "Ir a split/pane derecha" },
+      { "<C-\\>", "<cmd>TmuxNavigatePrevious<CR>", desc = "Ir al split/pane anterior" },
+    },
+  },
 }
