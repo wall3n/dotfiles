@@ -9,3 +9,4 @@ AUDIT_REPORT.md
 install-packages.sh
 Brewfile
 docs/
+.config/tmux/plugins
