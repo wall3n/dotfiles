@@ -1,114 +1,217 @@
+# ==============================================================================
+#  ZSHRC — portable (macOS + Linux), managed by chezmoi
+# ==============================================================================
 
 # ------------------------------------------------------------------------------
-# Path - The higher it is, the more priority it has
+# PATH — earlier entries win. Only existing dirs are kept.
 # ------------------------------------------------------------------------------
-typeset -U path  # Elimina duplicados automáticamente
+typeset -U path PATH   # auto-dedupe
+
 path=(
+	# mise shims: give correct runtime versions to NON-interactive contexts too
+	# (scripts, IDEs, jdtls). In interactive shells `mise activate` below
+	# prepends the real tool paths, which take precedence over these shims.
+	"$HOME/.local/share/mise/shims"
 	"$HOME/bin"
 	"$HOME/.local/bin"
-	"$HOME/.opencode/bin"
-	${JAVA_HOME:+"$JAVA_HOME/bin"}
-	${GEM_HOME:+"$GEM_HOME/bin"}
-	${GOPATH:+"$GOPATH/bin"}
 	"$HOME/.cargo/bin"
-	"/usr/local/opt/ruby/bin"
-	"/usr/local/opt/python/libexec/bin"
 	"/opt/homebrew/bin"
+	"/opt/homebrew/sbin"
 	"/usr/local/bin"
 	"/usr/local/sbin"
-	"/bin"
 	"/usr/bin"
+	"/bin"
 	"/usr/sbin"
 	"/sbin"
-	"/snap/bin"
 	$path
 )
+# Drop entries that do not exist on this machine
+path=(${^path}(N-/))
+export PATH
 
-# --- Configuración Básica ---
+# ------------------------------------------------------------------------------
+# BASICS
+# ------------------------------------------------------------------------------
 export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less"
+export LESS="-R"
+export _ZO_DOCTOR=0          # zoxide: silence hook check in non-interactive shells
 
-# --- Historial ---
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+# ------------------------------------------------------------------------------
+# HISTORY
+# ------------------------------------------------------------------------------
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
 
 setopt append_history
+setopt inc_append_history
 setopt share_history
 setopt hist_expire_dups_first
 setopt hist_ignore_dups
+setopt hist_ignore_all_dups
 setopt hist_ignore_space
+setopt hist_reduce_blanks
 setopt hist_verify
 setopt extended_history
 
-# --- Sistema de completado (con caché -C para arranque rápido) ---
-autoload -Uz compinit && compinit -C
+# ------------------------------------------------------------------------------
+# COMPLETION
+# ------------------------------------------------------------------------------
+{{ if eq .chezmoi.os "darwin" -}}
+if [[ -d /opt/homebrew/share/zsh/site-functions ]]; then
+	fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+fi
+{{ end -}}
+autoload -Uz compinit
+# Rebuild the completion cache at most once a day, otherwise load it fast.
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+	compinit
+else
+	compinit -C
+fi
 
-# --- Alias Inteligentes ---
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' list-colors ''
 
-# EZA command
-if command -v eza &> /dev/null; then
+# ==============================================================================
+#  VERSION MANAGERS
+# ==============================================================================
+
+# --- mise (Rust) — primary manager: java, node, python, go, rust, deno, bun... --
+# Owns $PATH for every managed runtime. Activated early so later tools see it.
+if command -v mise &>/dev/null; then
+	eval "$(mise activate zsh)"
+fi
+
+# --- SDKMAN — JVM ecosystem only (kotlin, scala, sbt, springboot CLI). ---------
+# Lazy-loaded: it does NOT touch PATH at startup, so it never fights mise.
+# The first `sdk` call sources it for real.
+export SDKMAN_DIR="$HOME/.sdkman"
+if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
+	sdk() {
+		unfunction sdk
+		source "$SDKMAN_DIR/bin/sdkman-init.sh"
+		sdk "$@"
+	}
+fi
+
+# ==============================================================================
+#  ALIASES
+# ==============================================================================
+
+# --- eza (ls) ---
+if command -v eza &>/dev/null; then
 	alias ls="eza --icons --git"
 	alias l="eza -l --icons --git -a"
 	alias lt="eza --tree --level=2 --long --icons --git"
-	alias ltree="eza --tree --level=2  --icons --git"
+	alias ltree="eza --tree --level=2 --icons --git"
 fi
 
-# BAT
-if command -v bat &> /dev/null; then
-    alias cat='bat'
-elif command -v batcat &> /dev/null; then
-    alias cat='batcat'
+# --- bat (cat) ---
+if command -v bat &>/dev/null; then
+	alias cat='bat'
+elif command -v batcat &>/dev/null; then
+	alias cat='batcat'
 fi
 
-# NVIM
+# --- neovim ---
 alias v="nvim"
 alias vi="nvim"
 alias vim="nvim"
 
-# ZOXIDE
-if command -v z &> /dev/null; then
-	alias cd='z'
-fi
-
-# GIT
+# --- git ---
 alias gadd="git add"
 alias gc='git commit -m'
 alias gca="git add --all && git commit --amend --no-edit"
 alias gco="git checkout"
 alias gdiff='git diff'
-alias gst="git status "
+alias gst="git status"
 alias gps="git push"
 alias gpl="git pull"
 alias gb="git branch"
 alias gl='git log'
+command -v lazygit &>/dev/null && alias lg='lazygit'
 
-if [ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
-    source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-fi
+# --- modern replacements ---
+command -v dust &>/dev/null && alias du='dust'
+command -v procs &>/dev/null && alias ps='procs'
 
-# --- Configurar fzf ---
-if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
-    source /usr/share/doc/fzf/examples/key-bindings.zsh
-    source /usr/share/doc/fzf/examples/completion.zsh
-fi
-
-# NVM - Usar siempre ~/.nvm como directorio canónico
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# STEL
+# --- project shortcuts ---
 alias tunnel="cloudflared tunnel --url http://localhost:8080"
 alias projects='cd ~/workspaces && cd "$(find . -mindepth 2 -maxdepth 2 -type d | sed "s|^\./||" | fzf --height 15% --reverse)"'
 alias autoskill='npx autoskills'
 
-# --- Inicializaciones (al final para evitar warnings de zoxide) ---
+# --- cross-platform clipboard: `pbcopy` / `pbpaste` work on Linux too ---------
+if ! command -v pbcopy &>/dev/null; then
+	if command -v wl-copy &>/dev/null; then
+		alias pbcopy='wl-copy'
+		alias pbpaste='wl-paste'
+	elif command -v xclip &>/dev/null; then
+		alias pbcopy='xclip -selection clipboard'
+		alias pbpaste='xclip -selection clipboard -o'
+	elif command -v xsel &>/dev/null; then
+		alias pbcopy='xsel --clipboard --input'
+		alias pbpaste='xsel --clipboard --output'
+	fi
+fi
 
-# Starship (Prompt)
-eval "$(starship init zsh)"
+# ==============================================================================
+#  TOOL INITIALISATION  (interactive shells only)
+# ==============================================================================
+if [[ -o interactive ]]; then
 
-# Zoxide (debe ir al final del archivo)
-eval "$(zoxide init zsh)"
+	# --- fzf: Ctrl-R history, Ctrl-T files, Alt-C cd -------------------------
+	if command -v fzf &>/dev/null; then
+		if fzf --zsh &>/dev/null; then
+			source <(fzf --zsh)                       # fzf >= 0.48
+		else
+			for _d in /opt/homebrew/opt/fzf/shell /usr/share/fzf \
+			          /usr/share/doc/fzf/examples; do
+				[[ -f "$_d/key-bindings.zsh" ]] && source "$_d/key-bindings.zsh"
+				[[ -f "$_d/completion.zsh"   ]] && source "$_d/completion.zsh"
+			done
+			unset _d
+		fi
+		export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --info=inline"
+		command -v fd &>/dev/null && \
+			export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+	fi
 
-# Alias cd -> z (DESPUÉS de init zoxide; antes el guard fallaba porque z aún no existía)
-alias cd='z'
+	# --- direnv: per-project env vars / secrets ------------------------------
+	command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+
+	# --- atuin: SQLite shell history (rebinds Ctrl-R, keeps Up as normal) ----
+	command -v atuin &>/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
+
+	# --- starship prompt -----------------------------------------------------
+	command -v starship &>/dev/null && eval "$(starship init zsh)"
+
+	# --- zoxide (must come after the other chpwd hooks) ----------------------
+	if command -v zoxide &>/dev/null; then
+		eval "$(zoxide init zsh)"
+		alias cd='z'
+	fi
+
+	# --- zsh-autosuggestions -------------------------------------------------
+	for _p in \
+		/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
+		/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
+		/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh \
+		"$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"; do
+		[[ -f "$_p" ]] && { source "$_p"; break; }
+	done
+
+	# --- zsh-syntax-highlighting — MUST be the last plugin sourced -----------
+	for _p in \
+		/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+		/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+		/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+		"$HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"; do
+		[[ -f "$_p" ]] && { source "$_p"; break; }
+	done
+	unset _p
+
+fi
