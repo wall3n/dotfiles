@@ -51,4 +51,57 @@ return {
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<CR>", desc = "Ir al split/pane anterior" },
     },
   },
+
+  -- ============================================================
+  -- DAP para Node / TypeScript
+  -- Antes solo había depurador para Java (en java.lua). Para un hackathon
+  -- con backend en Node esto es lo que evita depurar a base de console.log.
+  -- ============================================================
+  {
+    "mxsdev/nvim-dap-vscode-js",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      {
+        "microsoft/vscode-js-debug",
+        version = "1.*",
+        build = "npm i && npm run compile vsDebugServerBundle && rm -rf out && mv -f dist out",
+      },
+    },
+    ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
+    config = function()
+      require("dap-vscode-js").setup({
+        debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
+        adapters = { "pwa-node", "pwa-chrome", "node-terminal" },
+      })
+
+      local dap = require("dap")
+      for _, language in ipairs({ "javascript", "typescript", "javascriptreact", "typescriptreact" }) do
+        dap.configurations[language] = {
+          {
+            type = "pwa-node",
+            request = "launch",
+            name = "Lanzar archivo actual",
+            program = "${file}",
+            cwd = "${workspaceFolder}",
+            sourceMaps = true,
+          },
+          {
+            type = "pwa-node",
+            request = "attach",
+            name = "Adjuntar a proceso Node",
+            processId = require("dap.utils").pick_process,
+            cwd = "${workspaceFolder}",
+            sourceMaps = true,
+          },
+          {
+            type = "pwa-chrome",
+            request = "launch",
+            name = "Lanzar Chrome contra localhost:3000",
+            url = "http://localhost:3000",
+            webRoot = "${workspaceFolder}",
+          },
+        }
+      end
+    end,
+  },
 }
