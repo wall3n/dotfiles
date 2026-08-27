@@ -64,3 +64,12 @@ vim.g.loaded_netrwPlugin = 1
 
 -- Asegurar que el directorio de undo existe
 vim.fn.system({ "mkdir", "-p", os.getenv("HOME") .. "/.vim/undodir" })
+
+-- El log de LSP crecía sin límite (llegó a 371 MB con jdtls). OFF en uso normal;
+-- súbelo a "warn"/"debug" a mano cuando haga falta depurar un servidor.
+-- nvim 0.12 movió la API: vim.lsp.set_log_level -> vim.lsp.log.set_level.
+if vim.lsp.log and vim.lsp.log.set_level then
+    vim.lsp.log.set_level("OFF")
+else
+    vim.lsp.set_log_level("OFF")
+end
