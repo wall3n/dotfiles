@@ -40,7 +40,7 @@ opt.splitright = true
 -- Archivos
 opt.swapfile = false
 opt.backup = false
-opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+opt.undodir = vim.fn.stdpath("state") .. "/undodir"
 opt.undofile = true
 
 -- Performance
@@ -62,8 +62,9 @@ opt.foldlevel = 99
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- Asegurar que el directorio de undo existe
-vim.fn.system({ "mkdir", "-p", os.getenv("HOME") .. "/.vim/undodir" })
+-- Asegurar que el directorio de undo existe (mkdir nativo: sin fork de shell
+-- en cada arranque, y funciona igual en macOS y en Linux)
+vim.fn.mkdir(vim.fn.stdpath("state") .. "/undodir", "p")
 
 -- El log de LSP crecía sin límite (llegó a 371 MB con jdtls). OFF en uso normal;
 -- súbelo a "warn"/"debug" a mano cuando haga falta depurar un servidor.
