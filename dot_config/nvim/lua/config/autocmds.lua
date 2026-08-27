@@ -34,7 +34,8 @@ autocmd("TextYankPost", {
     group = yankGroup,
     pattern = "*",
     callback = function()
-        vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
+        -- vim.highlight.on_yank quedó deprecado en nvim 0.11 -> vim.hl.on_yank
+        (vim.hl or vim.highlight).on_yank({ higroup = "IncSearch", timeout = 150 })
     end,
 })
 
