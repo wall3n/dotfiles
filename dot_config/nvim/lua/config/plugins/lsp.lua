@@ -302,6 +302,9 @@ return {
         yaml = { "prettier" },
         lua = { "stylua" },
         java = { "google-java-format" },
+        markdown = { "prettier" },
+        sh = { "shfmt" },
+        bash = { "shfmt" },
       },
       format_on_save = {
         timeout_ms = 2000,
