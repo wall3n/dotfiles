@@ -11,6 +11,11 @@ java   = "temurin-21"   # LTS, matches the JavaSE-21 runtime declared for jdtls
 node   = "lts"
 python = "3.13"
 
+# Global CLI tools from PyPI, each in its own isolated venv (uv tool install)
+uv = "latest"
+"pipx:markitdown" = { version = "latest", extras = "all" }  # any doc -> Markdown
+"pipx:opendataloader-pdf" = "latest"                        # PDF -> Markdown/JSON, needs java
+
 [settings]
 # Honour .nvmrc / .java-version / .python-version left by other tools
 idiomatic_version_file_enable_tools = ["node", "java", "python"]
