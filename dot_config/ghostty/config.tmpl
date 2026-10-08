@@ -34,9 +34,10 @@ window-save-state = always
 
 {{ if eq .chezmoi.os "darwin" -}}
 # ─── macOS ────────────────────────────────────────────────────────
-# Required so tmux/nvim receive Alt-<key>. Without this the floax
-# binding (Alt+p) and every other Meta chord silently do nothing.
-macos-option-as-alt = true
+# Left Option is Alt, so tmux/nvim receive Alt-<key> (the floax
+# binding Alt+p and every other Meta chord). Right Option still types
+# the Spanish ISO symbols: @ # [ ] { } | \
+macos-option-as-alt = left
 # `hidden` removes the titlebar, so the window has no drag area and no
 # green button. `transparent` keeps the chrome but lets the terminal
 # background come through.
