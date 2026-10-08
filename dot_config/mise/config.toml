@@ -8,7 +8,7 @@
 
 [tools]
 java   = "temurin-21"   # LTS, matches the JavaSE-21 runtime declared for jdtls
-node   = "lts"
+node   = "24"     # Node 24 LTS line, do not move to 26
 python = "3.13"
 
 # Global CLI tools from PyPI, each in its own isolated venv (uv tool install)
