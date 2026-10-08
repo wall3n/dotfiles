@@ -141,8 +141,21 @@ command -v procs &>/dev/null && alias ps='procs'
 
 # --- project shortcuts ---
 alias tunnel="cloudflared tunnel --url http://localhost:8080"
-alias projects='cd ~/workspaces && cd "$(find . -mindepth 2 -maxdepth 2 -type d | sed "s|^\./||" | fzf --height 15% --reverse)"'
+# jump to any git repo under $HOME (fzf picker)
+projects() {
+	local repo
+	repo=$(fd --hidden --no-ignore --type d --max-depth 8 '^\.git$' "$HOME" \
+		--exclude Library --exclude .Trash --exclude node_modules \
+		--exclude .cache --exclude .cargo --exclude .rustup \
+		--exclude .npm --exclude .nvm --exclude .venv --exclude .local \
+		--exclude Applications --exclude 'go/pkg' 2>/dev/null \
+		| sed -e "s|/\.git/\{0,1\}\$||" -e "s|^$HOME/||" \
+		| grep -v '^\.' | sort \
+		| fzf --height 40% --reverse --prompt 'repo> ') || return
+	[[ -n $repo ]] && cd "$HOME/$repo"
+}
 alias autoskill='npx autoskills'
+alias agy-all='agy --dangerously-skip-permissions'
 
 # --- cross-platform clipboard: `pbcopy` / `pbpaste` work on Linux too ---------
 if ! command -v pbcopy &>/dev/null; then
@@ -215,3 +228,9 @@ if [[ -o interactive ]]; then
 	unset _p
 
 fi
+
+# mysql-client is keg-only (added for hackathon toolchain)
+export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
+
+# Second Claude Code account, with its own login and shared config
+alias claude-stel='CLAUDE_CONFIG_DIR="$HOME/.claude-stel" claude'
