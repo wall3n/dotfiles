@@ -1,0 +1,5 @@
+# Loaded by ~/.gitconfig for repos under ~/.local/share/nvim/.
+# lazy.nvim runs git in every plugin repo. With fsmonitor on, each
+# plugin starts a file watcher daemon that never exits.
+[core]
+	fsmonitor = false

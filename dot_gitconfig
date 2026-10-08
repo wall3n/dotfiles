@@ -77,3 +77,7 @@
 	unpushed = log @{u}.. --oneline
 	# Branches sorted by most recent activity
 	recent = branch --sort=-committerdate --format='%(committerdate:relative)%09%(refname:short)'
+
+# Keep this block last so it wins over [core] fsmonitor above.
+[includeIf "gitdir:~/.local/share/nvim/"]
+	path = ~/.gitconfig-nvim-plugins
