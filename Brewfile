@@ -124,6 +124,8 @@ brew "tmux"
 brew "tree"
 # Internet file retriever
 brew "wget"
+# Git worktrees + tmux windows for parallel agents
+brew "workmux"
 # GNU Binutils for x86_64-elf cross development
 brew "x86_64-elf-binutils"
 # GNU compiler collection for x86_64-elf

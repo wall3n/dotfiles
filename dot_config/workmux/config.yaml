@@ -1,0 +1,43 @@
+# ══════════════════════════════════════════════════════════════════
+#  workmux — managed by chezmoi
+#  One git worktree + one tmux window per task, for parallel agents.
+#  Project overrides go in .workmux.yaml (run `workmux init`).
+#  Docs: workmux docs · https://workmux.raine.dev/guide/configuration/
+# ══════════════════════════════════════════════════════════════════
+
+nerdfont: true
+agent: claude
+base_branch: auto      # new branches start from main, not the current branch
+merge_strategy: rebase
+
+# Layout: nvim on the left, the agent on the right with focus
+panes:
+  - command: nvim .
+  - command: <agent>
+    split: horizontal
+    percentage: 45
+    focus: true
+
+files:
+  symlink:
+    # Permissions granted in one worktree apply in all of them
+    - .claude/settings.local.json
+
+post_create:
+  # Trust a mise.toml in the new worktree, so its tools load
+  - mise trust --quiet || true
+
+# Dashboard colors: Gruvbox Dark Hard
+theme:
+  mode: dark
+  custom:
+    bg: "#3c3836"
+    fg: "#ebdbb2"
+    border: "#504945"
+    dimmed: "#928374"
+    header: "#fabd2f"
+    accent: "#83a598"
+    info: "#8ec07c"
+    success: "#b8bb26"
+    warning: "#fe8019"
+    error: "#fb4934"
