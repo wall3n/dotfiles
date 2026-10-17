@@ -72,8 +72,6 @@ brew "gitleaks"
 brew "glow"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
 # Framework for layout and rendering of i18n text
 brew "pango"
 # Library to render SVG files using Cairo
@@ -106,14 +104,10 @@ brew "mdless"
 brew "mise"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
-# Open-source, cross-platform JavaScript runtime environment
-brew "node"
 # Execute binaries from Python packages in isolated environments
 brew "pipx"
 # Fast, disk space efficient package manager
 brew "pnpm", link: false
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.11"
 # Generic machine emulator and virtualizer
 brew "qemu"
 # Search tool like grep and The Silver Searcher
@@ -151,8 +145,6 @@ brew "supabase/tap/supabase", trusted: true
 # Display content in the dock and menu bar
 cask "dockx"
 cask "gitnuro"
-# JDK from the Eclipse Foundation (Adoptium)
-cask "temurin"
 # LaTeX editor
 cask "texstudio"
 # Open-source version of the X.Org X Window System
