@@ -7,25 +7,20 @@ echo "🍎 Detectado macOS. Verificando Homebrew..."
 if ! command -v brew &> /dev/null; then
     echo "Instalando Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    if [[ -f /opt/homebrew/bin/brew ]]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
-    if [[ -f /usr/local/bin/brew ]]; then eval "$(/usr/local/bin/brew shellenv)"; fi
 fi
+if [[ -f /opt/homebrew/bin/brew ]]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
+if [[ -f /usr/local/bin/brew ]]; then eval "$(/usr/local/bin/brew shellenv)"; fi
 
-# Lista de paquetes (Modifica esto para forzar re-ejecución si cambias algo)
-# Paquetes: {{ list "neovim" "starship" "bat" "eza" "zoxide" "ripgrep" | join " " }}
+# El script se vuelve a ejecutar cuando cambia el Brewfile.
+# Brewfile sha256: {{ include "Brewfile" | sha256sum }}
+brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
 
-brew bundle --no-lock --file=/dev/stdin <<EOF
-brew "neovim"
-brew "starship"
-brew "bat"
-brew "eza"
-brew "zoxide"
-brew "ripgrep"
-brew "fd"
-brew "git"
-cask "ghostty"
-cask "font-jetbrains-mono-nerd-font"
-EOF
+# Se instalan solo si faltan: en este Mac ya existen fuera de Homebrew,
+# y un cask sobre una app existente hace fallar `brew bundle`.
+command -v starship &> /dev/null || brew install starship
+[[ -d /Applications/Ghostty.app ]] || brew install --cask ghostty
+ls ~/Library/Fonts/JetBrainsMonoNerdFont* &> /dev/null \
+    || brew install --cask font-jetbrains-mono-nerd-font
 
 # Key repeat rápido (mejor para navegación vim). Requiere reiniciar sesión.
 defaults write -g KeyRepeat -int 1
@@ -36,7 +31,7 @@ defaults write -g InitialKeyRepeat -int 15
 echo "🐧 Detectado Linux. Instalando dependencias..."
 
 sudo apt update
-sudo apt install -y zsh git build-essential curl wget gpg fd-find
+sudo apt install -y zsh git build-essential curl wget gpg fd-find fzf tmux
 sudo snap install nvim --classic
 
 # Instalar Starship
@@ -48,6 +43,12 @@ fi
 if ! command -v zoxide &> /dev/null; then
     curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
 fi
+
+# Instalar mise
+if ! command -v mise &> /dev/null && [ ! -x "$HOME/.local/bin/mise" ]; then
+    curl -fsSL https://mise.run | sh
+fi
+export PATH="$HOME/.local/bin:$PATH"
 
 # Instalar Bat
 sudo apt install -y bat
@@ -65,27 +66,30 @@ if ! command -v eza &> /dev/null; then
     sudo apt install -y eza
 fi
 
-{{ end -}}
-
-# --- Ejecución común ---
-if ! command -v opencode &> /dev/null; then
-    echo "🤖 Instalando Opencode Agent CLI..."
-    curl -fsSL https://opencode.ai/install | bash
-fi
-
-if [ "$SHELL" != "$(which zsh)" ]; then
-    echo "Cambiando shell a Zsh..."
-    chsh -s "$(which zsh)"
-fi
-
+# En macOS lo instala el Brewfile
 if [ ! -d "$HOME/.zsh/zsh-autosuggestions" ]; then
     echo "Instalando zsh-autosuggestions..."
     git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 fi
 
-if ! command -v fzf &> /dev/null; then
-    echo "Instalando fzf mediante apt..."
-    sudo apt-get install -y fzf
+{{ end -}}
+
+# --- Ejecución común ---
+
+# Runtimes de ~/.config/mise/config.toml (java, node, python, uv...)
+if command -v mise &> /dev/null; then
+    echo "📦 Instalando runtimes con mise..."
+    mise install
+fi
+
+if ! command -v opencode &> /dev/null; then
+    echo "🤖 Instalando Opencode Agent CLI..."
+    curl -fsSL https://opencode.ai/install | bash
+fi
+
+if [ "$(basename "$SHELL")" != "zsh" ]; then
+    echo "Cambiando shell a Zsh..."
+    chsh -s "$(command -v zsh)"
 fi
 
 # --- Bootstrap de herramientas Neovim vía Mason (idempotente) ---
