@@ -210,6 +210,10 @@ if [[ -o interactive ]]; then
 		alias cd='z'
 	fi
 
+	# --- tmux-sessionizer on Ctrl-f (ThePrimeagen). Right arrow still
+	#     accepts an autosuggestion. -----------------------------------------
+	command -v tmux-sessionizer &>/dev/null && bindkey -s '^f' 'tmux-sessionizer\n'
+
 	# --- zsh-autosuggestions -------------------------------------------------
 	for _p in \
 		/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh \

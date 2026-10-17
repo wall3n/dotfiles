@@ -7,66 +7,104 @@
 #    tmux-sessionizer              → fzf interactivo
 #    tmux-sessionizer /ruta/dir    → directo sin fzf
 #
-#  Añade tus directorios base en la variable SEARCH_DIRS
+#  Atajos: Ctrl-f en zsh (fuera de tmux) · <prefix> f dentro de tmux
+#
+#  Configuración opcional (se carga si existe):
+#    ~/.config/tmux-sessionizer/tmux-sessionizer.conf
+#      TS_SEARCH_PATHS=(~/01-projects:2 ~/otra/ruta:1)   # ruta:profundidad
+#
+#  Hidratación: si el proyecto tiene un fichero `.tmux-sessionizer`
+#  (o existe ~/.tmux-sessionizer), se ejecuta al crear la sesión.
+#  Ejemplo: `tmux new-window -n server; tmux send-keys 'nvim .' C-m`
 # ══════════════════════════════════════════════════════════════════
 
-# ─── Directorios donde buscar proyectos ───────────────────────────
-SEARCH_DIRS=(
-    "$HOME/projects"
-    "$HOME/work"
-    "$HOME/.config"
-    "$HOME/dotfiles"
-    "$HOME"
+# ─── Directorios donde buscar proyectos (ruta:profundidad) ────────
+TS_SEARCH_PATHS=(
+    "$HOME/01-projects:2"
+    "$HOME/02-areas:2"
+    "$HOME/hackathon-kit:1"
+    "$HOME/.config:1"
+)
+# Rutas que se ofrecen tal cual, sin buscar dentro
+TS_EXTRA_PATHS=(
+    "$HOME/.local/share/chezmoi"
 )
 
-# Profundidad máxima de búsqueda dentro de cada directorio
-MAX_DEPTH=3
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-sessionizer/tmux-sessionizer.conf"
+# shellcheck source=/dev/null
+[[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
+
+# ─── Funciones ────────────────────────────────────────────────────
+
+# Sesiones abiertas primero (marcadas con *), después los directorios
+list_candidates() {
+    tmux list-sessions -F '* #{session_name}' 2>/dev/null
+    local entry dir depth
+    for entry in "${TS_SEARCH_PATHS[@]}"; do
+        dir="${entry%%:*}"
+        depth="${entry##*:}"
+        [[ "$depth" == "$entry" ]] && depth=1
+        [[ -d "$dir" ]] || continue
+        find "$dir" -mindepth 1 -maxdepth "$depth" -type d \
+            -not -path '*/.git' -not -path '*/.git/*' \
+            -not -path '*/node_modules*' 2>/dev/null
+    done
+    for dir in "${TS_EXTRA_PATHS[@]}"; do
+        [[ -d "$dir" ]] && echo "$dir"
+    done
+}
+
+switch_to() {
+    if [[ -z $TMUX ]]; then
+        tmux attach-session -t "$1"
+    else
+        tmux switch-client -t "$1"
+    fi
+}
+
+hydrate() {
+    local session=$1 dir=$2
+    if [[ -f "$dir/.tmux-sessionizer" ]]; then
+        tmux send-keys -t "$session" "source '$dir/.tmux-sessionizer'" C-m
+    elif [[ -f "$HOME/.tmux-sessionizer" ]]; then
+        tmux send-keys -t "$session" "source '$HOME/.tmux-sessionizer'" C-m
+    fi
+}
 
 # ─── Lógica principal ─────────────────────────────────────────────
 
 if [[ $# -eq 1 ]]; then
-    # Si se pasa un argumento directo, úsalo
     selected=$1
 else
-    # Construir lista de directorios y fuzzy-findear con fzf
     selected=$(
-        find "${SEARCH_DIRS[@]}" \
-            -mindepth 1 \
-            -maxdepth $MAX_DEPTH \
-            -type d \
-            2>/dev/null \
+        list_candidates | awk '!seen[$0]++' | sed "s|^$HOME|~|" \
         | fzf \
             --prompt="  Sesión: " \
             --height=50% \
             --reverse \
-            --border \
-            --preview 'ls -la {}' \
-            --preview-window=right:40%
+            --border=rounded \
+            --preview 'p={}; [[ $p == "* "* ]] && tmux capture-pane -ept "${p#\* }" 2>/dev/null || eza -1 --icons --group-directories-first "${p/#\~/$HOME}" 2>/dev/null || ls -1 "${p/#\~/$HOME}"' \
+            --preview-window=right:45%
     )
 fi
 
 # Si el usuario cancela fzf, salir limpiamente
-if [[ -z $selected ]]; then
+[[ -z $selected ]] && exit 0
+
+# Sesión ya abierta → saltar a ella
+if [[ $selected == "* "* ]]; then
+    switch_to "${selected#\* }"
     exit 0
 fi
 
-# Normalizar el nombre de sesión: reemplaza puntos y barras por guiones
-selected_name=$(basename "$selected" | tr '.' '-' | tr '/' '-')
+selected="${selected/#\~/$HOME}"
+# Normalizar el nombre de sesión: tmux no admite puntos ni dos puntos
+selected_name=$(basename "$selected" | tr '.:' '__')
 
-# ¿Tmux está corriendo?
-tmux_running=$(pgrep tmux)
-
-# ─── Caso 1: No hay tmux en absoluto → crear sesión y adjuntar ────
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s "$selected_name" -c "$selected"
-    exit 0
-fi
-
-# ─── Caso 2: La sesión ya existe → saltar a ella ──────────────────
+# Crear la sesión en background si no existe, e hidratarla
 if ! tmux has-session -t="$selected_name" 2>/dev/null; then
-    # Crear la sesión en background (sin adjuntar)
     tmux new-session -ds "$selected_name" -c "$selected"
+    hydrate "$selected_name" "$selected"
 fi
 
-# ─── Caso 3: Cambiar a la sesión ──────────────────────────────────
-tmux switch-client -t "$selected_name"
+switch_to "$selected_name"
