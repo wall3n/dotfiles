@@ -155,10 +155,10 @@ mas "Bitwarden", id: 1352778147
 mas "CleanMyKeyboard", id: 6468120888
 mas "CopyClip", id: 595191960
 mas "Hex Fiend", id: 1342896380
-mas "Keynote", id: 409183694
+mas "Keynote", id: 361285480
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft Word", id: 462054704
-mas "Numbers", id: 409203825
+mas "Numbers", id: 361304891
 mas "OneDrive", id: 823766827
 mas "Prime Video", id: 545519333
 mas "Save to Notion", id: 6478488868
