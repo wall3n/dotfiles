@@ -1,6 +1,8 @@
 tap "anomalyco/tap"
 tap "denisidoro/tools"
+tap "felixkratz/formulae"
 tap "jetpackduba/apps"
+tap "nikitabobko/tap"
 tap "nativeos/i386-elf-toolchain"
 tap "riscv-software-src/riscv", "https://github.com/riscv-software-src/homebrew-riscv.git"
 tap "supabase/tap"
@@ -18,6 +20,8 @@ brew "xz"
 brew "binutils"
 # Parser generator
 brew "bison", link: true
+# Colored borders around the focused window (used by AeroSpace)
+brew "felixkratz/formulae/borders", trusted: true
 # Core application library for C
 brew "glib"
 # Manage your dotfiles across multiple diverse machines, securely
@@ -147,6 +151,8 @@ brew "zsh-syntax-highlighting"
 # Supabase CLI
 brew "supabase/tap/supabase", trusted: true
 # Display content in the dock and menu bar
+# i3-like tiling window manager (beta only, see aerospace.toml)
+cask "nikitabobko/tap/aerospace", trusted: true
 cask "dockx"
 cask "gitnuro"
 # LaTeX editor
