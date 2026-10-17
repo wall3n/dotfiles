@@ -120,6 +120,8 @@ brew "tcptraceroute"
 brew "telnet"
 # Terminal multiplexer
 brew "tmux"
+# Vimium-like hints to copy paths, hashes and URLs in tmux
+brew "tmux-fingers"
 # Display directories as trees (with optional color/HTML output)
 brew "tree"
 # Internet file retriever
