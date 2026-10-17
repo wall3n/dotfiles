@@ -5,3 +5,6 @@ fi
 {{ end -}}
 
 export PATH="$HOME/.local/bin:$PATH"
+
+# Vega CLI (solo si está instalado)
+[[ -f "$HOME/vega/env" ]] && source "$HOME/vega/env"
