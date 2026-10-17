@@ -2,11 +2,12 @@ README.md
 LICENSE
 .git
 .gitignore
-scripts/
 token.txt
 CLAUDE.md
 AUDIT_REPORT.md
-install-packages.sh
 Brewfile
 docs/
 .config/tmux/plugins
+{{ if ne .chezmoi.os "linux" }}
+.config/i3
+{{ end }}
