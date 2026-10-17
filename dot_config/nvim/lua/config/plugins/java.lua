@@ -107,7 +107,7 @@ M.setup = function()
         }),
 
         -- Capacidades con autocompletado
-        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        capabilities = require("blink.cmp").get_lsp_capabilities(),
 
         settings = {
             java = {
@@ -187,7 +187,7 @@ M.setup = function()
             -- LSP base
             map("gd", vim.lsp.buf.definition, "Ir a definición")
             map("gD", vim.lsp.buf.declaration, "Declaración")
-            map("gr", require("telescope.builtin").lsp_references, "Referencias")
+            map("gr", function() Snacks.picker.lsp_references() end, "Referencias")
             map("gI", vim.lsp.buf.implementation, "Implementación")
             map("K", vim.lsp.buf.hover, "Hover docs")
             map("<leader>la", vim.lsp.buf.code_action, "Code action")

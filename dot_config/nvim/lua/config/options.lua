@@ -31,6 +31,9 @@ opt.cursorline = true
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 opt.wrap = false
+-- Borde redondeado para todas las ventanas flotantes (hover, diagnósticos,
+-- signature help, plugins que no fijan el suyo). nvim >= 0.11
+opt.winborder = "rounded"
 
 -- Splits: apertura natural
 opt.splitbelow = true
@@ -57,7 +60,7 @@ opt.foldmethod = "expr"
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldlevel = 99
 
--- Netrw desactivado (usamos neo-tree)
+-- Netrw desactivado (oil.nvim es el explorador)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 

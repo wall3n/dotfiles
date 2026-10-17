@@ -49,12 +49,13 @@ return {
           section_separators = { left = "", right = "" },
           globalstatus = true,
         },
+        -- Corta: modo · rama · archivo · diagnósticos ··· LSP · posición
         sections = {
           lualine_a = { "mode" },
-          lualine_b = { "branch", "diff", "diagnostics" },
-          lualine_c = { { "filename", path = 1 } },
-          lualine_x = { lsp_info, "encoding", "fileformat", "filetype" },
-          lualine_y = { "progress" },
+          lualine_b = { "branch" },
+          lualine_c = { { "filename", path = 1 }, "diagnostics" },
+          lualine_x = { lsp_info },
+          lualine_y = {},
           lualine_z = { "location" },
         },
       })
@@ -69,14 +70,14 @@ return {
     event = "VeryLazy",
     dependencies = {
       "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
     },
     opts = {
+      -- vim.notify lo gestiona snacks.notifier (ver más abajo)
+      notify = { enabled = false },
       lsp = {
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
           ["vim.lsp.util.stylize_markdown"] = true,
-          ["cmp.entry.get_documentation"] = true,
         },
       },
       presets = {
@@ -101,7 +102,7 @@ return {
       })
       -- Nueva spec de which-key v3+
       wk.add({
-        { "<leader>f",  group = "  Buscar/Telescope" },
+        { "<leader>f",  group = "  Buscar" },
         { "<leader>g",  group = "  Git" },
         { "<leader>l",  group = "  LSP" },
         { "<leader>j",  group = "  Java" },
@@ -118,14 +119,63 @@ return {
   -- Iconos
   { "nvim-tree/nvim-web-devicons", lazy = true },
 
-  -- Indentación visual
+  -- ============================================================
+  -- SNACKS: picker (sustituye a Telescope), notificaciones, guías de
+  -- indentación, vim.ui.input y lazygit flotante. Sin dashboard ni
+  -- animaciones (ver CLAUDE.md).
+  -- ============================================================
   {
-    "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    main = "ibl",
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
     opts = {
-      indent = { char = "│" },
-      scope = { enabled = true },
+      bigfile = { enabled = true },
+      dashboard = { enabled = false },
+      input = { enabled = true },
+      notifier = { enabled = true, style = "compact", timeout = 3000 },
+      indent = {
+        enabled = true,
+        animate = { enabled = false },
+        scope = { enabled = true },
+      },
+      -- configure = false: lazygit usa ~/.config/lazygit/config.yml
+      -- (LG_CONFIG_FILE) con el tema Gruvbox, no un tema generado
+      lazygit = { configure = false },
+      picker = {
+        enabled = true,
+        ui_select = true,
+        sources = {
+          files = {
+            hidden = true,
+            exclude = { "node_modules", "target", "*.class", "*.jar", "*.war", "*.ear" },
+          },
+          grep = {
+            hidden = true,
+            exclude = { "node_modules", "target", "*.class", "*.jar", "*.war", "*.ear" },
+          },
+        },
+      },
+    },
+    keys = {
+      -- Buscar (mismas teclas que tenía Telescope)
+      { "<leader>ff", function() Snacks.picker.files() end,                 desc = "Buscar archivos" },
+      { "<leader>fg", function() Snacks.picker.grep() end,                  desc = "Buscar en contenido (grep)" },
+      { "<leader>fb", function() Snacks.picker.buffers() end,               desc = "Buscar buffers abiertos" },
+      { "<leader>fh", function() Snacks.picker.help() end,                  desc = "Buscar help" },
+      { "<leader>fr", function() Snacks.picker.recent() end,                desc = "Archivos recientes" },
+      { "<leader>fw", function() Snacks.picker.grep_word() end,             desc = "Buscar palabra bajo cursor", mode = { "n", "x" } },
+      { "<leader>fd", function() Snacks.picker.diagnostics() end,           desc = "Diagnósticos LSP" },
+      { "<leader>fs", function() Snacks.picker.lsp_symbols() end,           desc = "Símbolos del documento" },
+      { "<leader>fS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "Símbolos del workspace" },
+      { "<leader>fc", function() Snacks.picker.git_log() end,               desc = "Commits Git" },
+      { "<leader>fC", function() Snacks.picker.git_log_file() end,          desc = "Commits del buffer" },
+      { "<leader>fj", function() Snacks.picker.files({ ft = "java", title = "Clases Java" }) end, desc = "Buscar archivos Java" },
+      { "<leader>fk", function() Snacks.picker.keymaps() end,               desc = "Buscar keymaps" },
+      { "<leader>f/", function() Snacks.picker.resume() end,                desc = "Reabrir última búsqueda" },
+      { "<leader>fn", function() Snacks.picker.notifications() end,         desc = "Historial de notificaciones" },
+      -- Git
+      { "<leader>gg", function() Snacks.lazygit() end,                      desc = "Lazygit" },
+      { "<leader>ge", function() Snacks.picker.git_status() end,            desc = "Git status (picker)" },
     },
   },
 }

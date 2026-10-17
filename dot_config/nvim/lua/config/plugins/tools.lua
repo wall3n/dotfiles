@@ -1,8 +1,8 @@
 return {
   -- ============================================================
   -- OIL: editar el sistema de archivos como si fuera un buffer
-  -- Complementa a neo-tree: neo-tree para el árbol lateral, oil para
-  -- renombrar/mover/crear en masa con los mismos comandos de vim.
+  -- Único explorador (estilo ThePrimeagen): `-` abre el directorio padre,
+  -- <leader>e lo abre flotante. Se edita como un buffer normal.
   -- ============================================================
   {
     "stevearc/oil.nvim",
@@ -10,7 +10,7 @@ return {
     lazy = false, -- necesario para poder abrir `nvim <directorio>`
     keys = {
       { "-",          "<cmd>Oil<CR>",                desc = "Oil: abrir directorio padre" },
-      { "<leader>eo", "<cmd>Oil --float<CR>",        desc = "Oil: abrir en ventana flotante" },
+      { "<leader>e",  "<cmd>Oil --float<CR>",        desc = "Oil: explorador flotante" },
     },
     opts = {
       default_file_explorer = true,

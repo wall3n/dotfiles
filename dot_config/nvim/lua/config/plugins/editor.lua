@@ -23,8 +23,8 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     event = { "BufReadPost", "BufNewFile" },
     keys = {
-      { "<leader>ft", "<cmd>TodoTelescope<CR>",                            desc = "Buscar TODOs" },
-      { "<leader>fT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<CR>",    desc = "Buscar TODO/FIX" },
+      { "<leader>ft", function() Snacks.picker.todo_comments() end,                                   desc = "Buscar TODOs" },
+      { "<leader>fT", function() Snacks.picker.todo_comments({ keywords = { "TODO", "FIX", "FIXME" } }) end, desc = "Buscar TODO/FIX" },
       { "]t",         function() require("todo-comments").jump_next() end, desc = "Siguiente TODO" },
       { "[t",         function() require("todo-comments").jump_prev() end, desc = "TODO anterior" },
     },
@@ -56,14 +56,8 @@ return {
         java = { "string" },
       },
     },
-    config = function(_, opts)
-      local autopairs = require("nvim-autopairs")
-      autopairs.setup(opts)
-      -- Integración con nvim-cmp
-      local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-      local cmp = require("cmp")
-      cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-    end,
+    -- blink.cmp añade los paréntesis al confirmar una función (auto_brackets),
+    -- así que ya no hace falta la integración que tenía con nvim-cmp.
   },
 
   -- ============================================================
@@ -79,17 +73,7 @@ return {
     -- cs"' -> cambiar " por '
   },
 
-  -- ============================================================
-  -- COMMENT: Comentar/descomentar rápido
-  -- ============================================================
-  {
-    "numToStr/Comment.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {},
-    -- gcc -> comentar línea
-    -- gc{motion} -> comentar movimiento
-    -- gb -> comentar bloque
-  },
+  -- COMMENT: nativo desde nvim 0.10 (gcc línea, gc{motion}). Sin plugin.
 
   -- ============================================================
   -- TROUBLE: Lista de diagnósticos, referencias, quickfix mejorada
