@@ -213,7 +213,8 @@ M.setup = function()
             -- Code lens
             jdtls.setup_dap({ hotcodereplace = "auto" })
             require("jdtls.setup").add_commands()
-            vim.lsp.codelens.refresh()
+            -- nvim 0.12: enable() mantiene los code lens al día; refresh() está deprecado
+            vim.lsp.codelens.enable(true, { bufnr = bufnr })
         end,
     }
 
