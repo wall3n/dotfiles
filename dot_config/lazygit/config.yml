@@ -1,0 +1,54 @@
+# ══════════════════════════════════════════════════════════════════
+#  lazygit — managed by chezmoi
+#  Gruvbox Dark Hard, same palette as tmux, nvim and Ghostty.
+#  macOS reads ~/Library/Application Support/lazygit by default, so
+#  .zshrc points LG_CONFIG_FILE at this file on both platforms.
+#  Reference: lazygit --config (prints every key with its default)
+# ══════════════════════════════════════════════════════════════════
+
+gui:
+  nerdFontsVersion: "3"
+  border: rounded
+  showRandomTip: false
+  showCommandLog: false
+  showBottomLine: true
+  sidePanelWidth: 0.3
+  expandFocusedSidePanel: true
+  mainPanelSplitMode: flexible
+  theme:
+    activeBorderColor: ["#fabd2f", bold]          # yellow, as the tmux active window
+    inactiveBorderColor: ["#504945"]              # bg2, as the tmux pane border
+    searchingActiveBorderColor: ["#fe8019", bold] # orange
+    optionsTextColor: ["#83a598"]                 # blue
+    selectedLineBgColor: ["#3c3836"]              # bg1
+    inactiveViewSelectedLineBgColor: ["#32302f"]
+    cherryPickedCommitFgColor: ["#1d2021"]
+    cherryPickedCommitBgColor: ["#8ec07c"]        # aqua
+    markedBaseCommitFgColor: ["#1d2021"]
+    markedBaseCommitBgColor: ["#fabd2f"]
+    unstagedChangesColor: ["#fb4934"]             # red
+    defaultFgColor: ["#ebdbb2"]                   # fg
+
+git:
+  # delta reads the [delta] section of ~/.gitconfig (gruvbox-dark,
+  # line numbers). The line-number links open the file in the editor.
+  diffRenderers:
+    - command: >-
+        delta --dark --paging=never --line-numbers --hyperlinks
+        --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+    - type: rawGit
+      name: color-words
+      args: [--color-words]
+  autoFetch: true
+  parseEmoji: true
+
+os:
+  # Inside an nvim terminal, `e` opens the file in that nvim.
+  # Outside nvim, it starts a new nvim.
+  editPreset: nvim-remote
+
+update:
+  method: never # Homebrew updates lazygit
+
+notARepository: quit
+promptToReturnFromSubprocess: false
