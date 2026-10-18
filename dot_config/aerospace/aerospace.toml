@@ -20,9 +20,10 @@ start-at-login = true
 auto-reload-config = true # chezmoi apply reloads the layout at once
 
 # Window borders (JankyBorders): Gruvbox yellow for the focused window,
-# the same color as the active pane in tmux and lazygit
+# the same color as the active pane in tmux and lazygit.
+# borders.sh stops the borders when AeroSpace quits.
 after-startup-command = [
-  'exec-and-forget /opt/homebrew/bin/borders active_color=0xfffabd2f inactive_color=0xff3c3836 width=5.0 style=round hidpi=on',
+  'exec-and-forget ~/.config/aerospace/borders.sh',
 ]
 
 enable-normalization-flatten-containers = true
