@@ -159,33 +159,5 @@
     }
   },
   "theme": "auto",
-  "agentPushNotifEnabled": true,
-  "autoMode": {
-    "environment": [
-      "### Org-wide",
-      "**Organization**: None configured",
-      "**Cloud provider(s)**: None configured",
-      "**Repository visibility**: Not queryable here (no git remotes in this repo) — assume private",
-      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
-      "**Secrets management**: Bitwarden (secure notes), macOS Keychain (program-read tokens), chezmoi with age encryption (secrets inside dotfiles/repos) — per repo README",
-      "**Default / protected branches**: Unknown — no remotes configured, default branch unset (origin/HEAD unset)",
-      "**CI/CD deploy targets**: None configured",
-      "**Network posture**: None configured",
-      "**Source control**: This repo has no configured git remotes (local-only checkout at /Users/franmoreno)",
-      "**Trusted internal domains**: None configured",
-      "**Trusted cloud buckets**: None configured — bucket config scan did not complete cleanly",
-      "**Key internal services**: None configured",
-      "**Internal package registry**: None configured",
-      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar. Per repo README: recovery codes/passwords go in Bitwarden, API tokens in macOS Keychain, dotfile/repo secrets in chezmoi+age",
-      "**Data retention / declassification**: None configured",
-      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
-      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
-      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
-      "### User-specific",
-      "**Primary use of Claude Code**: personal/hobby use — organizing a home directory (PARA method), dotfiles (chezmoi), toolchain management (mise, rustup, brew), and small side/university projects",
-      "**Trusted repo**: This local checkout at /Users/franmoreno (no git remotes configured — nothing to push to; treat as local-only)",
-      "**Org-specific CLIs**: None configured — routine personal CLIs observed: chezmoi, mise, brew, rustup, supabase, opendataloader-pdf, markitdown",
-      "**Routine under /Users/franmoreno/ prefix**: file organization per the PARA structure (01-projects, 02-areas, 03-resources, 04-archive), dotfile management via chezmoi, toolchain version management via mise/rustup"
-    ]
-  }
+  "agentPushNotifEnabled": true
 }
