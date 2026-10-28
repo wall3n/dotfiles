@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 # --- macOS (Homebrew) ---
 {{ if eq .chezmoi.os "darwin" -}}
@@ -25,6 +26,15 @@ ls ~/Library/Fonts/JetBrainsMonoNerdFont* &> /dev/null \
 # Key repeat rápido (mejor para navegación vim). Requiere reiniciar sesión.
 defaults write -g KeyRepeat -int 1
 defaults write -g InitialKeyRepeat -int 15
+
+# Ajustes que recomienda AeroSpace (guide → "Recommended macOS settings").
+# spans-displays: desactiva "Displays have separate Spaces" (cerrar sesión).
+# expose-group-apps: Mission Control agrupa las ventanas por app.
+# NSWindowShouldDragOnGesture: ctrl+cmd+arrastrar mueve cualquier ventana.
+defaults write com.apple.spaces spans-displays -bool true
+defaults write com.apple.dock expose-group-apps -bool true
+defaults write -g NSWindowShouldDragOnGesture -bool true
+killall Dock
 
 # --- Linux (Debian/Ubuntu) ---
 {{ else if eq .chezmoi.os "linux" -}}
@@ -82,6 +92,11 @@ if command -v mise &> /dev/null; then
     mise install
 fi
 
+if ! command -v claude &> /dev/null; then
+    echo "🤖 Instalando Claude Code (instalador nativo, canal stable)..."
+    curl -fsSL https://claude.ai/install.sh | bash -s stable
+fi
+
 if ! command -v opencode &> /dev/null; then
     echo "🤖 Instalando Opencode Agent CLI..."
     curl -fsSL https://opencode.ai/install | bash
@@ -93,7 +108,8 @@ if [ "$(basename "$SHELL")" != "zsh" ]; then
 fi
 
 # --- Bootstrap de herramientas Neovim vía Mason (idempotente) ---
-if command -v nvim &> /dev/null; then
+if command -v nvim &> /dev/null \
+    && [ ! -d "$HOME/.local/share/nvim/mason/packages/jdtls" ]; then
     echo "🔧 Instalando LSP/DAP/formatters vía Mason..."
     nvim --headless "+MasonInstall jdtls java-debug-adapter java-test prettier google-java-format stylua" +qall 2>/dev/null || true
 fi
