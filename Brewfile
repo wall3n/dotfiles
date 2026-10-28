@@ -111,7 +111,7 @@ brew "neovim"
 # Execute binaries from Python packages in isolated environments
 brew "pipx"
 # Fast, disk space efficient package manager
-brew "pnpm", link: false
+brew "pnpm"
 # Generic machine emulator and virtualizer
 brew "qemu"
 # Search tool like grep and The Silver Searcher
@@ -154,7 +154,7 @@ brew "supabase/tap/supabase", trusted: true
 cask "nikitabobko/tap/aerospace", trusted: true
 # Display content in the dock and menu bar
 cask "dockx"
-cask "gitnuro"
+cask "gitnuro", trusted: true
 # LaTeX editor
 cask "texstudio"
 # Open-source version of the X.Org X Window System
@@ -175,4 +175,3 @@ mas "TickTick", id: 966085870
 mas "Timetable", id: 425121147
 mas "UTM", id: 1538878817
 cargo "docpars"
-npm "pnpm"
