@@ -150,9 +150,9 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 # Supabase CLI
 brew "supabase/tap/supabase", trusted: true
-# Display content in the dock and menu bar
 # i3-like tiling window manager (beta only, see aerospace.toml)
 cask "nikitabobko/tap/aerospace", trusted: true
+# Display content in the dock and menu bar
 cask "dockx"
 cask "gitnuro"
 # LaTeX editor
