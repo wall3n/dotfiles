@@ -1,0 +1,50 @@
+#!/bin/bash
+set -eo pipefail
+
+# Restaura las skills y los plugins de Claude Code en un equipo nuevo.
+# La config propia (settings, agents, commands, hooks, rules, skills
+# propias) ya llega como symlinks a claude/ (ver dot_claude/).
+# Corre después de install-packages: necesita node (mise) y jq (Brewfile).
+#
+# Se vuelve a ejecutar cuando cambia el lock de skills o settings.json.
+# skills-lock.json sha256: {{ include "claude/skills-lock.json" | sha256sum }}
+# settings.json sha256: {{ include "claude/settings.json" | sha256sum }}
+
+if ! command -v claude &> /dev/null || ! command -v npx &> /dev/null; then
+    echo "⚠️  Falta claude o npx. Ejecuta 'chezmoi apply' otra vez al final."
+    exit 0
+fi
+
+LOCK="{{ .chezmoi.sourceDir }}/claude/skills-lock.json"
+SETTINGS="{{ .chezmoi.sourceDir }}/claude/settings.json"
+
+# --- Skills de terceros (las del lock que aún no están instaladas) ---
+echo "🧩 Restaurando skills de Claude Code..."
+jq -r '.skills | to_entries | group_by(.value.source)[]
+       | "\(.[0].value.source) \(map(.key) | join(" "))"' "$LOCK" |
+while read -r source names; do
+    missing=()
+    for name in $names; do
+        [ -e "$HOME/.claude/skills/$name" ] || missing+=(--skill "$name")
+    done
+    [ ${#missing[@]} -eq 0 ] && continue
+    npx -y skills@latest add "$source" "${missing[@]}" -g -a claude-code -y \
+        < /dev/null || echo "⚠️  No se pudo instalar $source"
+done
+
+# --- Plugins: marketplaces extra y plugins activos de settings.json ---
+echo "🔌 Restaurando plugins de Claude Code..."
+jq -r '.extraKnownMarketplaces // {} | to_entries[]
+       | .value.source.repo' "$SETTINGS" |
+while read -r repo; do
+    claude plugin marketplace add "$repo" < /dev/null > /dev/null 2>&1 || true
+done
+installed="$(claude plugin list 2>/dev/null || true)"
+jq -r '.enabledPlugins // {} | to_entries[] | select(.value) | .key' "$SETTINGS" |
+while read -r plugin; do
+    grep -q "${plugin%@*}" <<< "$installed" && continue
+    claude plugin install "$plugin" -s user < /dev/null \
+        || echo "⚠️  No se pudo instalar $plugin"
+done
+
+echo "✅ Claude Code restaurado."
