@@ -209,15 +209,6 @@
       "installedAt": "2026-09-23T11:45:00.600Z",
       "updatedAt": "2026-09-23T11:45:00.600Z"
     },
-    "vega-multi-tv-migration": {
-      "source": "AmazonAppDev/devices-agent-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/AmazonAppDev/devices-agent-skills.git",
-      "skillPath": "skills/vega-multi-tv-migration/SKILL.md",
-      "skillFolderHash": "95c9e06aef1871797c445ff542f3e808f75790bc",
-      "installedAt": "2026-09-24T08:59:53.171Z",
-      "updatedAt": "2026-09-24T08:59:53.171Z"
-    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
