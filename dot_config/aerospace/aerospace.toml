@@ -12,6 +12,10 @@
 #  ctrl-alt-1..9           workspace      +shift  send window there
 #  ctrl-alt-/  tiles · ctrl-alt-,  accordion · ctrl-alt-f  fullscreen
 #  ctrl-alt-tab  last workspace · ctrl-alt-;  service mode
+#  ctrl-alt-r  resize mode · ctrl-alt-b  balance · ctrl-alt-shift-q  close
+#  ctrl-alt-c  Claude · ctrl-alt-w  Chrome · ctrl-alt-enter  Ghostty
+#
+#  WORKSPACES: 1 terminal · 2 browser · 3 IDE · 6 Claude · 7 chat · 8 tasks
 # ══════════════════════════════════════════════════════════════════
 
 config-version = 2
@@ -70,6 +74,42 @@ outer.bottom     = 10
 8 = ['built-in', 'main']
 9 = ['built-in', 'main']
 
+# ─── Apps to workspaces ───────────────────────────────────────────
+# One place for each part of the AI workflow: agents in the terminal (1),
+# the browser that the user-tester agent drives (2), the IDE for review (3),
+# and the Claude app on the laptop screen (6).
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.intellij'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = 'move-node-to-workspace 6'
+
+[[on-window-detected]]
+if.app-id = 'net.whatsapp.WhatsApp'
+run = 'move-node-to-workspace 7'
+
+[[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
+run = 'move-node-to-workspace 7'
+
+[[on-window-detected]]
+if.app-id = 'com.TickTick.task.mac'
+run = 'move-node-to-workspace 8'
+
 # ─── Floating windows ─────────────────────────────────────────────
 [[on-window-detected]]
 if.app-id = 'com.apple.systempreferences'
@@ -106,6 +146,9 @@ ctrl-alt-shift-l = 'move right'
 
 ctrl-alt-minus = 'resize smart -50'
 ctrl-alt-equal = 'resize smart +50'
+ctrl-alt-b = 'balance-sizes'
+ctrl-alt-r = 'mode resize'
+ctrl-alt-shift-q = 'close'
 
 ctrl-alt-1 = 'workspace 1'
 ctrl-alt-2 = 'workspace 2'
@@ -131,8 +174,20 @@ ctrl-alt-tab = 'workspace-back-and-forth'
 ctrl-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 ctrl-alt-enter = 'exec-and-forget open -a Ghostty'
+ctrl-alt-c = 'exec-and-forget open -a Claude'
+ctrl-alt-w = 'exec-and-forget open -a "Google Chrome"'
 
 ctrl-alt-semicolon = 'mode service'
+
+# ─── Resize mode: hold the size keys, esc or enter to leave ───────
+[mode.resize.binding]
+h = 'resize width -50'
+l = 'resize width +50'
+j = 'resize height +50'
+k = 'resize height -50'
+b = 'balance-sizes'
+esc = 'mode main'
+enter = 'mode main'
 
 # ─── Service mode: one key, then back to main ─────────────────────
 [mode.service.binding]
