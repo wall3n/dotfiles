@@ -1,7 +1,6 @@
 tap "anomalyco/tap"
 tap "denisidoro/tools"
 tap "felixkratz/formulae"
-tap "jetpackduba/apps"
 tap "nikitabobko/tap"
 tap "nativeos/i386-elf-toolchain"
 tap "riscv-software-src/riscv", "https://github.com/riscv-software-src/homebrew-riscv.git"
@@ -98,8 +97,6 @@ brew "libomp"
 brew "llvm"
 # Utility for directing compilation
 brew "make"
-# Mac App Store command-line interface
-brew "mas"
 # Java-based project management
 brew "maven"
 # Provides a formatted and highlighted view of Markdown files in Terminal
@@ -152,26 +149,4 @@ brew "zsh-syntax-highlighting"
 brew "supabase/tap/supabase", trusted: true
 # i3-like tiling window manager (beta only, see aerospace.toml)
 cask "nikitabobko/tap/aerospace", trusted: true
-# Display content in the dock and menu bar
-cask "dockx"
-cask "gitnuro", trusted: true
-# LaTeX editor
-cask "texstudio"
-# Open-source version of the X.Org X Window System
-cask "xquartz"
-mas "Bitwarden", id: 1352778147
-mas "CleanMyKeyboard", id: 6468120888
-mas "CopyClip", id: 595191960
-mas "Hex Fiend", id: 1342896380
-mas "Keynote", id: 361285480
-mas "Microsoft Excel", id: 462058435
-mas "Microsoft Word", id: 462054704
-mas "Numbers", id: 361304891
-mas "OneDrive", id: 823766827
-mas "Prime Video", id: 545519333
-mas "Save to Notion", id: 6478488868
-mas "The Unarchiver", id: 425424353
-mas "TickTick", id: 966085870
-mas "Timetable", id: 425121147
-mas "UTM", id: 1538878817
 cargo "docpars"
