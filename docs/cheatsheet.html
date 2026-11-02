@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dotfiles Cheatsheet</title>
+<style>
+  :root {
+    --bg: #1d2021; --bg1: #282828; --bg2: #3c3836; --bg3: #504945;
+    --fg: #ebdbb2; --fg-dim: #a89984; --gray: #928374;
+    --yellow: #fabd2f; --orange: #fe8019; --blue: #83a598; --aqua: #8ec07c;
+    --green: #b8bb26; --red: #fb4934; --purple: #d3869b;
+    --mono: "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f9f5d7; --bg1: #f2e5bc; --bg2: #ebdbb2; --bg3: #d5c4a1;
+      --fg: #3c3836; --fg-dim: #665c54; --gray: #7c6f64;
+      --yellow: #b57614; --orange: #af3a03; --blue: #076678; --aqua: #427b58;
+      --green: #79740e; --red: #9d0006; --purple: #8f3f71;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f9f5d7; --bg1: #f2e5bc; --bg2: #ebdbb2; --bg3: #d5c4a1;
+    --fg: #3c3836; --fg-dim: #665c54; --gray: #7c6f64;
+    --yellow: #b57614; --orange: #af3a03; --blue: #076678; --aqua: #427b58;
+    --green: #79740e; --red: #9d0006; --purple: #8f3f71;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font: 14px/1.45 var(--mono);
+  }
+  header {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg); border-bottom: 1px solid var(--bg2);
+    padding: 14px 16px 10px;
+  }
+  .bar { max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  h1 { font-size: 16px; margin: 0; color: var(--yellow); letter-spacing: .02em; }
+  h1 span { color: var(--gray); font-weight: normal; }
+  #q {
+    flex: 1 1 260px; min-width: 0;
+    background: var(--bg1); color: var(--fg);
+    border: 1px solid var(--bg3); border-radius: 999px;
+    padding: 7px 14px; font: inherit; outline: none;
+  }
+  #q:focus { border-color: var(--yellow); }
+  .hint { color: var(--gray); font-size: 12px; }
+  nav { max-width: 1400px; margin: 8px auto 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  nav a {
+    color: var(--fg-dim); text-decoration: none; font-size: 12px;
+    padding: 2px 10px; border-radius: 999px; background: var(--bg1);
+  }
+  nav a:hover { color: var(--bg); background: var(--yellow); }
+  main {
+    max-width: 1400px; margin: 0 auto; padding: 16px;
+    columns: 3 380px; column-gap: 16px;
+  }
+  section {
+    break-inside: avoid; margin: 0 0 16px;
+    background: var(--bg1); border: 1px solid var(--bg2); border-radius: 12px;
+    padding: 12px 14px;
+  }
+  section h2 {
+    margin: 0 0 2px; font-size: 14px; display: flex; align-items: baseline; gap: 8px;
+  }
+  section h2 .tag { font-size: 11px; color: var(--gray); font-weight: normal; }
+  section p.note { margin: 2px 0 8px; color: var(--gray); font-size: 12px; }
+  .c-tmux h2 { color: var(--aqua); }
+  .c-nvim h2 { color: var(--green); }
+  .c-git h2 { color: var(--orange); }
+  .c-wm h2 { color: var(--purple); }
+  .c-shell h2 { color: var(--blue); }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 3px 0; vertical-align: top; border-top: 1px dashed var(--bg2); }
+  tr:first-child td { border-top: 0; }
+  td:first-child { width: 44%; padding-right: 10px; white-space: nowrap; }
+  td:last-child { color: var(--fg-dim); }
+  kbd {
+    display: inline-block; font: 12px var(--mono);
+    background: var(--bg2); color: var(--fg);
+    border: 1px solid var(--bg3); border-bottom-width: 2px;
+    border-radius: 5px; padding: 0 5px; margin: 1px 0;
+  }
+  code { color: var(--yellow); font-size: 12px; }
+  /* keyboard map: positions come from the board's Vial definition */
+  #keyboard { max-width: 1368px; margin: 16px auto 0; width: calc(100% - 32px); }
+  .c-kb h2 { color: var(--yellow); }
+  .kb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 18px 28px; margin: 10px 0 8px; }
+  .kb { margin: 0; min-width: 0; container-type: inline-size; }
+  .kb figcaption { font-size: 12px; color: var(--gray); margin-bottom: 8px; }
+  .kb figcaption b { color: var(--fg); }
+  .kb-map { position: relative; aspect-ratio: 13.25 / 5.75; }
+  .k {
+    position: absolute; width: calc(7.547% - 3px); height: calc(17.391% - 3px);
+    display: grid; place-items: center; overflow: hidden; text-align: center;
+    background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-bottom-width: 2px; border-radius: 5px;
+    font-size: clamp(9px, 2.4cqw, 15px); line-height: 1;
+  }
+  .k.sm { font-size: clamp(7px, 1.6cqw, 11px); letter-spacing: -.03em; }
+  .k.off { background: none; border-color: var(--bg2); }
+  .k.held { background: none; color: var(--gray); }
+  .k.on { background: var(--orange); border-color: var(--orange); color: var(--bg); font-weight: 700; }
+  .hidden { display: none; }
+  #empty { display: none; text-align: center; color: var(--gray); padding: 40px 16px; }
+  footer { max-width: 1400px; margin: 0 auto; padding: 0 16px 24px; color: var(--gray); font-size: 12px; }
+  @media (max-width: 600px) {
+    td:first-child { white-space: normal; width: 48%; }
+  }
+  @media print {
+    header { position: static; }
+    nav, #q, .hint { display: none; }
+    body { font-size: 11px; }
+    main { columns: 3; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>Dotfiles <span>cheatsheet</span></h1>
+    <input id="q" type="search" placeholder="Filter: lazygit, split, java, C-a..." autocomplete="off">
+    <span class="hint">press <kbd>/</kbd> to search · <kbd>Esc</kbd> to clear</span>
+  </div>
+  <nav>
+    <a href="#keyboard">keyboard</a><a href="#tmux">tmux</a><a href="#sessions">sessions</a><a href="#copy">copy mode</a>
+    <a href="#nvim">nvim</a><a href="#find">find</a><a href="#lsp">lsp</a><a href="#java">java</a>
+    <a href="#debug">debug</a><a href="#nvgit">nvim git</a><a href="#edit">editing</a>
+    <a href="#lazygit">lazygit</a><a href="#workmux">workmux</a><a href="#aero">aerospace</a>
+    <a href="#zsh">zsh</a><a href="#ghostty">ghostty</a>
+  </nav>
+</header>
+
+<section class="c-kb" id="keyboard">
+  <h2>Keyboard <span class="tag">silakka54 · 4 layers · hold the orange thumb for a layer</span></h2>
+  <div class="kb-grid">
+<figure class="kb kb-base"><figcaption><b>Base</b> tap Esc/Ctl for Esc, hold for Ctrl · C-a is the tmux prefix</figcaption><div class="kb-map"><span class="k sm" style="left:0.000%;top:4.348%">C-a</span><span class="k" style="left:7.547%;top:4.348%">1</span><span class="k" style="left:15.094%;top:0.000%">2</span><span class="k" style="left:22.642%;top:0.000%">3</span><span class="k" style="left:30.189%;top:4.348%">4</span><span class="k" style="left:37.736%;top:8.696%">5</span><span class="k sm" style="left:0.000%;top:21.739%">Tab</span><span class="k" style="left:7.547%;top:21.739%">q</span><span class="k" style="left:15.094%;top:17.391%">w</span><span class="k" style="left:22.642%;top:17.391%">e</span><span class="k" style="left:30.189%;top:21.739%">r</span><span class="k" style="left:37.736%;top:26.087%">t</span><span class="k sm" style="left:0.000%;top:39.130%">Esc/<wbr>Ctl</span><span class="k" style="left:7.547%;top:39.130%">a</span><span class="k" style="left:15.094%;top:34.783%">s</span><span class="k" style="left:22.642%;top:34.783%">d</span><span class="k" style="left:30.189%;top:39.130%">f</span><span class="k" style="left:37.736%;top:43.478%">g</span><span class="k sm" style="left:0.000%;top:56.522%">Shift</span><span class="k" style="left:7.547%;top:56.522%">z</span><span class="k" style="left:15.094%;top:52.174%">x</span><span class="k" style="left:22.642%;top:52.174%">c</span><span class="k" style="left:30.189%;top:56.522%">v</span><span class="k" style="left:37.736%;top:60.870%">b</span><span class="k" style="left:54.717%;top:8.696%">6</span><span class="k" style="left:62.264%;top:4.348%">7</span><span class="k" style="left:69.811%;top:0.000%">8</span><span class="k" style="left:77.358%;top:0.000%">9</span><span class="k" style="left:84.906%;top:4.348%">0</span><span class="k sm" style="left:92.453%;top:4.348%">Bksp</span><span class="k" style="left:54.717%;top:26.087%">y</span><span class="k" style="left:62.264%;top:21.739%">u</span><span class="k" style="left:69.811%;top:17.391%">i</span><span class="k" style="left:77.358%;top:17.391%">o</span><span class="k" style="left:84.906%;top:21.739%">p</span><span class="k" style="left:92.453%;top:21.739%">'</span><span class="k" style="left:54.717%;top:43.478%">h</span><span class="k" style="left:62.264%;top:39.130%">j</span><span class="k" style="left:69.811%;top:34.783%">k</span><span class="k" style="left:77.358%;top:34.783%">l</span><span class="k" style="left:84.906%;top:39.130%">ñ</span><span class="k sm" style="left:92.453%;top:39.130%">Alt</span><span class="k" style="left:54.717%;top:60.870%">n</span><span class="k" style="left:62.264%;top:56.522%">m</span><span class="k" style="left:69.811%;top:52.174%">,</span><span class="k" style="left:77.358%;top:52.174%">.</span><span class="k" style="left:84.906%;top:56.522%">-</span><span class="k sm" style="left:92.453%;top:56.522%">Shift</span><span class="k sm" style="left:20.755%;top:82.609%">Aero</span><span class="k sm" style="left:54.717%;top:82.609%">Enter</span><span class="k sm" style="left:28.302%;top:82.609%">Lower</span><span class="k sm" style="left:64.151%;top:82.609%">Raise</span><span class="k sm" style="left:37.736%;top:82.609%">Space</span><span class="k sm" style="left:71.698%;top:82.609%">Cmd</span></div></figure>
+<figure class="kb kb-raise"><figcaption><b>Raise</b> hold the right thumb · symbols</figcaption><div class="kb-map"><span class="k off" style="left:0.000%;top:4.348%"></span><span class="k off" style="left:7.547%;top:4.348%"></span><span class="k off" style="left:15.094%;top:0.000%"></span><span class="k off" style="left:22.642%;top:0.000%"></span><span class="k off" style="left:30.189%;top:4.348%"></span><span class="k off" style="left:37.736%;top:8.696%"></span><span class="k off" style="left:0.000%;top:21.739%"></span><span class="k" style="left:7.547%;top:21.739%">!</span><span class="k" style="left:15.094%;top:17.391%">@</span><span class="k" style="left:22.642%;top:17.391%">#</span><span class="k" style="left:30.189%;top:21.739%">$</span><span class="k" style="left:37.736%;top:26.087%">%</span><span class="k sm held" style="left:0.000%;top:39.130%">Esc/<wbr>Ctl</span><span class="k" style="left:7.547%;top:39.130%">=</span><span class="k" style="left:15.094%;top:34.783%">+</span><span class="k" style="left:22.642%;top:34.783%">-</span><span class="k" style="left:30.189%;top:39.130%">_</span><span class="k" style="left:37.736%;top:43.478%">|</span><span class="k sm held" style="left:0.000%;top:56.522%">Shift</span><span class="k" style="left:7.547%;top:56.522%">&lt;</span><span class="k" style="left:15.094%;top:52.174%">&gt;</span><span class="k" style="left:22.642%;top:52.174%">;</span><span class="k" style="left:30.189%;top:56.522%">:</span><span class="k" style="left:37.736%;top:60.870%">~</span><span class="k off" style="left:54.717%;top:8.696%"></span><span class="k off" style="left:62.264%;top:4.348%"></span><span class="k off" style="left:69.811%;top:0.000%"></span><span class="k off" style="left:77.358%;top:0.000%"></span><span class="k off" style="left:84.906%;top:4.348%"></span><span class="k off" style="left:92.453%;top:4.348%"></span><span class="k" style="left:54.717%;top:26.087%">^</span><span class="k" style="left:62.264%;top:21.739%">&amp;</span><span class="k" style="left:69.811%;top:17.391%">*</span><span class="k" style="left:77.358%;top:17.391%">?</span><span class="k" style="left:84.906%;top:21.739%">/</span><span class="k" style="left:92.453%;top:21.739%">\</span><span class="k" style="left:54.717%;top:43.478%">&quot;</span><span class="k" style="left:62.264%;top:39.130%">(</span><span class="k" style="left:69.811%;top:34.783%">)</span><span class="k" style="left:77.358%;top:34.783%">{</span><span class="k" style="left:84.906%;top:39.130%">}</span><span class="k" style="left:92.453%;top:39.130%">´</span><span class="k" style="left:54.717%;top:60.870%">`</span><span class="k" style="left:62.264%;top:56.522%">[</span><span class="k" style="left:69.811%;top:52.174%">]</span><span class="k off" style="left:77.358%;top:52.174%"></span><span class="k off" style="left:84.906%;top:56.522%"></span><span class="k sm held" style="left:92.453%;top:56.522%">Shift</span><span class="k off" style="left:20.755%;top:82.609%"></span><span class="k off" style="left:54.717%;top:82.609%"></span><span class="k off" style="left:28.302%;top:82.609%"></span><span class="k sm on" style="left:64.151%;top:82.609%">Raise</span><span class="k off" style="left:37.736%;top:82.609%"></span><span class="k off" style="left:71.698%;top:82.609%"></span></div></figure>
+<figure class="kb kb-lower"><figcaption><b>Lower</b> hold the left thumb · navigation and F keys</figcaption><div class="kb-map"><span class="k off" style="left:0.000%;top:4.348%"></span><span class="k" style="left:7.547%;top:4.348%">F1</span><span class="k" style="left:15.094%;top:0.000%">F2</span><span class="k" style="left:22.642%;top:0.000%">F3</span><span class="k" style="left:30.189%;top:4.348%">F4</span><span class="k" style="left:37.736%;top:8.696%">F5</span><span class="k off" style="left:0.000%;top:21.739%"></span><span class="k off" style="left:7.547%;top:21.739%"></span><span class="k off" style="left:15.094%;top:17.391%"></span><span class="k off" style="left:22.642%;top:17.391%"></span><span class="k off" style="left:30.189%;top:21.739%"></span><span class="k off" style="left:37.736%;top:26.087%"></span><span class="k sm held" style="left:0.000%;top:39.130%">Esc/<wbr>Ctl</span><span class="k off" style="left:7.547%;top:39.130%"></span><span class="k off" style="left:15.094%;top:34.783%"></span><span class="k off" style="left:22.642%;top:34.783%"></span><span class="k off" style="left:30.189%;top:39.130%"></span><span class="k off" style="left:37.736%;top:43.478%"></span><span class="k sm held" style="left:0.000%;top:56.522%">Shift</span><span class="k off" style="left:7.547%;top:56.522%"></span><span class="k off" style="left:15.094%;top:52.174%"></span><span class="k off" style="left:22.642%;top:52.174%"></span><span class="k off" style="left:30.189%;top:56.522%"></span><span class="k off" style="left:37.736%;top:60.870%"></span><span class="k" style="left:54.717%;top:8.696%">F6</span><span class="k" style="left:62.264%;top:4.348%">F7</span><span class="k" style="left:69.811%;top:0.000%">F8</span><span class="k" style="left:77.358%;top:0.000%">F9</span><span class="k sm" style="left:84.906%;top:4.348%">F10</span><span class="k sm" style="left:92.453%;top:4.348%">Del</span><span class="k sm" style="left:54.717%;top:26.087%">Home</span><span class="k sm" style="left:62.264%;top:21.739%">PgDn</span><span class="k sm" style="left:69.811%;top:17.391%">PgUp</span><span class="k sm" style="left:77.358%;top:17.391%">End</span><span class="k off" style="left:84.906%;top:21.739%"></span><span class="k off" style="left:92.453%;top:21.739%"></span><span class="k" style="left:54.717%;top:43.478%">←</span><span class="k" style="left:62.264%;top:39.130%">↓</span><span class="k" style="left:69.811%;top:34.783%">↑</span><span class="k" style="left:77.358%;top:34.783%">→</span><span class="k off" style="left:84.906%;top:39.130%"></span><span class="k sm held" style="left:92.453%;top:39.130%">Alt</span><span class="k sm" style="left:54.717%;top:60.870%">Mute</span><span class="k sm" style="left:62.264%;top:56.522%">Vol-</span><span class="k sm" style="left:69.811%;top:52.174%">Vol+</span><span class="k sm" style="left:77.358%;top:52.174%">Play</span><span class="k off" style="left:84.906%;top:56.522%"></span><span class="k sm held" style="left:92.453%;top:56.522%">Shift</span><span class="k off" style="left:20.755%;top:82.609%"></span><span class="k off" style="left:54.717%;top:82.609%"></span><span class="k sm on" style="left:28.302%;top:82.609%">Lower</span><span class="k off" style="left:64.151%;top:82.609%"></span><span class="k off" style="left:37.736%;top:82.609%"></span><span class="k off" style="left:71.698%;top:82.609%"></span></div></figure>
+<figure class="kb kb-aero"><figcaption><b>Aero</b> hold the outer left thumb · each key sends ⌃⌥ + key, add Shift for ⌃⌥⇧</figcaption><div class="kb-map"><span class="k off" style="left:0.000%;top:4.348%"></span><span class="k" style="left:7.547%;top:4.348%">1</span><span class="k" style="left:15.094%;top:0.000%">2</span><span class="k" style="left:22.642%;top:0.000%">3</span><span class="k" style="left:30.189%;top:4.348%">4</span><span class="k" style="left:37.736%;top:8.696%">5</span><span class="k sm" style="left:0.000%;top:21.739%">Tab</span><span class="k" style="left:7.547%;top:21.739%">q</span><span class="k" style="left:15.094%;top:17.391%">w</span><span class="k off" style="left:22.642%;top:17.391%"></span><span class="k" style="left:30.189%;top:21.739%">r</span><span class="k off" style="left:37.736%;top:26.087%"></span><span class="k sm held" style="left:0.000%;top:39.130%">Esc/<wbr>Ctl</span><span class="k off" style="left:7.547%;top:39.130%"></span><span class="k off" style="left:15.094%;top:34.783%"></span><span class="k off" style="left:22.642%;top:34.783%"></span><span class="k" style="left:30.189%;top:39.130%">f</span><span class="k off" style="left:37.736%;top:43.478%"></span><span class="k sm held" style="left:0.000%;top:56.522%">Shift</span><span class="k off" style="left:7.547%;top:56.522%"></span><span class="k off" style="left:15.094%;top:52.174%"></span><span class="k" style="left:22.642%;top:52.174%">c</span><span class="k off" style="left:30.189%;top:56.522%"></span><span class="k" style="left:37.736%;top:60.870%">b</span><span class="k" style="left:54.717%;top:8.696%">6</span><span class="k" style="left:62.264%;top:4.348%">7</span><span class="k" style="left:69.811%;top:0.000%">8</span><span class="k" style="left:77.358%;top:0.000%">9</span><span class="k off" style="left:84.906%;top:4.348%"></span><span class="k off" style="left:92.453%;top:4.348%"></span><span class="k off" style="left:54.717%;top:26.087%"></span><span class="k off" style="left:62.264%;top:21.739%"></span><span class="k off" style="left:69.811%;top:17.391%"></span><span class="k" style="left:77.358%;top:17.391%">-</span><span class="k" style="left:84.906%;top:21.739%">=</span><span class="k off" style="left:92.453%;top:21.739%"></span><span class="k" style="left:54.717%;top:43.478%">h</span><span class="k" style="left:62.264%;top:39.130%">j</span><span class="k" style="left:69.811%;top:34.783%">k</span><span class="k" style="left:77.358%;top:34.783%">l</span><span class="k" style="left:84.906%;top:39.130%">;</span><span class="k sm held" style="left:92.453%;top:39.130%">Alt</span><span class="k off" style="left:54.717%;top:60.870%"></span><span class="k off" style="left:62.264%;top:56.522%"></span><span class="k" style="left:69.811%;top:52.174%">,</span><span class="k off" style="left:77.358%;top:52.174%"></span><span class="k" style="left:84.906%;top:56.522%">/</span><span class="k sm held" style="left:92.453%;top:56.522%">Shift</span><span class="k sm on" style="left:20.755%;top:82.609%">Aero</span><span class="k sm" style="left:54.717%;top:82.609%">Enter</span><span class="k off" style="left:28.302%;top:82.609%"></span><span class="k off" style="left:64.151%;top:82.609%"></span><span class="k off" style="left:37.736%;top:82.609%"></span><span class="k off" style="left:71.698%;top:82.609%"></span></div></figure>
+  </div>
+  <p class="note">Dead keys: press <kbd>^</kbd> <kbd>`</kbd> <kbd>~</kbd> <kbd>´</kbd>, then press <kbd>Space</kbd>. Keymap source: ~/.config/keyboard/silakka54/apply.py.</p>
+</section>
+
+<main id="sheet">
+
+<section class="c-tmux" id="tmux">
+  <h2>tmux <span class="tag">prefix = C-a (C-b also works)</span></h2>
+  <p class="note">Every key below comes after the prefix unless it says "no prefix".</p>
+  <table>
+    <tr><td><kbd>|</kbd></td><td>Split side by side</td></tr>
+    <tr><td><kbd>-</kbd></td><td>Split top and bottom</td></tr>
+    <tr><td><kbd>c</kbd></td><td>New window in the current directory</td></tr>
+    <tr><td><kbd>C-h/j/k/l</kbd> no prefix</td><td>Move between tmux panes and nvim splits</td></tr>
+    <tr><td><kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd></td><td>Resize the pane (repeatable)</td></tr>
+    <tr><td><kbd>m</kbd></td><td>Zoom the pane in and out</td></tr>
+    <tr><td><kbd>^</kbd></td><td>Last window</td></tr>
+    <tr><td><kbd>&lt;</kbd> <kbd>&gt;</kbd></td><td>Move the window left or right</td></tr>
+    <tr><td><kbd>g</kbd></td><td>lazygit in a popup</td></tr>
+    <tr><td><kbd>A</kbd></td><td>workmux agent dashboard</td></tr>
+    <tr><td><kbd>B</kbd></td><td>workmux status sidebar</td></tr>
+    <tr><td><kbd>Alt-p</kbd> no prefix</td><td>Floating scratch pane (floax)</td></tr>
+    <tr><td><kbd>u</kbd></td><td>Pick a URL on screen and open it</td></tr>
+    <tr><td><kbd>F</kbd></td><td>Hints: copy a path, hash, IP or URL</td></tr>
+    <tr><td><kbd>j</kbd></td><td>Hints, jump mode (moves the cursor)</td></tr>
+    <tr><td><kbd>p</kbd></td><td>Paste from the system clipboard</td></tr>
+    <tr><td><kbd>?</kbd></td><td>Open <code>hey</code>, the tools and keys browser</td></tr>
+    <tr><td><kbd>r</kbd></td><td>Reload the tmux config</td></tr>
+    <tr><td><kbd>I</kbd> · <kbd>U</kbd></td><td>TPM: install · update plugins</td></tr>
+  </table>
+</section>
+
+<section class="c-tmux" id="sessions">
+  <h2>Sessions <span class="tag">tmux-sessionizer</span></h2>
+  <table>
+    <tr><td><kbd>C-f</kbd> in zsh</td><td>Pick a project, open or jump to its session</td></tr>
+    <tr><td><kbd>f</kbd> after prefix</td><td>The same picker inside tmux</td></tr>
+    <tr><td><code>* name</code> in the list</td><td>A session that is already open</td></tr>
+    <tr><td><code>.tmux-sessionizer</code></td><td>File in a project: runs when its session starts</td></tr>
+    <tr><td><kbd>N</kbd></td><td>New session with a name</td></tr>
+    <tr><td><kbd>X</kbd></td><td>Kill the current session (asks first)</td></tr>
+    <tr><td><kbd>s</kbd> · <kbd>w</kbd></td><td>Session tree · window tree (tmux default)</td></tr>
+    <tr><td><kbd>d</kbd></td><td>Detach</td></tr>
+  </table>
+  <p class="note">Search paths: ~/01-projects, ~/02-areas, ~/hackathon-kit, ~/.config, chezmoi. Change them in ~/.config/tmux-sessionizer/tmux-sessionizer.conf. Sessions save every 15 min and come back after a restart (resurrect and continuum).</p>
+</section>
+
+<section class="c-tmux" id="copy">
+  <h2>Copy mode <span class="tag">prefix [ , or scroll up</span></h2>
+  <table>
+    <tr><td><kbd>v</kbd> · <kbd>V</kbd></td><td>Start a selection · select the line</td></tr>
+    <tr><td><kbd>C-v</kbd></td><td>Rectangle selection</td></tr>
+    <tr><td><kbd>H</kbd> · <kbd>L</kbd></td><td>Start · end of line</td></tr>
+    <tr><td><kbd>y</kbd></td><td>Copy to the clipboard and exit</td></tr>
+    <tr><td><kbd>Y</kbd></td><td>Copy and stay in copy mode</td></tr>
+    <tr><td>mouse drag</td><td>Copy the selection</td></tr>
+    <tr><td><kbd>/</kbd> · <kbd>?</kbd></td><td>Search down · up</td></tr>
+    <tr><td><kbd>q</kbd></td><td>Exit copy mode</td></tr>
+  </table>
+</section>
+
+<section class="c-nvim" id="nvim">
+  <h2>nvim basics <span class="tag">leader = Space</span></h2>
+  <table>
+    <tr><td><kbd>-</kbd></td><td>Oil: open the parent directory</td></tr>
+    <tr><td><kbd>␣ e</kbd></td><td>Oil in a float</td></tr>
+    <tr><td><kbd>␣ sv</kbd> · <kbd>␣ sh</kbd></td><td>Split vertical · horizontal</td></tr>
+    <tr><td><kbd>␣ se</kbd> · <kbd>␣ sx</kbd></td><td>Equal splits · close split</td></tr>
+    <tr><td><kbd>␣ to</kbd> <kbd>␣ tx</kbd></td><td>New tab · close tab</td></tr>
+    <tr><td><kbd>␣ tn</kbd> <kbd>␣ tp</kbd></td><td>Next · previous tab</td></tr>
+    <tr><td><kbd>]b</kbd> <kbd>[b</kbd> · <kbd>␣ bd</kbd></td><td>Next · previous buffer · close buffer</td></tr>
+    <tr><td><kbd>J</kbd> <kbd>K</kbd> visual</td><td>Move the selected lines down · up</td></tr>
+    <tr><td><kbd>C-d</kbd> <kbd>C-u</kbd></td><td>Half-page scroll, cursor centered</td></tr>
+    <tr><td><kbd>␣ y</kbd> · <kbd>␣ Y</kbd></td><td>Copy to the clipboard · copy the line</td></tr>
+    <tr><td><kbd>␣ p</kbd> visual</td><td>Paste and keep the register</td></tr>
+    <tr><td><kbd>␣ d</kbd></td><td>Delete without a register</td></tr>
+    <tr><td><kbd>␣ rw</kbd></td><td>Replace the word under the cursor in the file</td></tr>
+    <tr><td><kbd>gcc</kbd> · <kbd>gc</kbd>motion</td><td>Comment the line · the motion (native)</td></tr>
+    <tr><td><kbd>]q</kbd> <kbd>[q</kbd> · <kbd>]l</kbd> <kbd>[l</kbd></td><td>Quickfix · location list</td></tr>
+    <tr><td><kbd>␣ uu</kbd></td><td>Undotree</td></tr>
+    <tr><td><kbd>␣ cs</kbd> · <kbd>{</kbd> <kbd>}</kbd></td><td>Symbol outline · previous · next symbol</td></tr>
+    <tr><td><kbd>␣ cx</kbd></td><td>chmod +x the current file</td></tr>
+    <tr><td><kbd>␣ ec</kbd></td><td>Edit the nvim config</td></tr>
+    <tr><td><kbd>␣ lm</kbd></td><td>Mason</td></tr>
+    <tr><td><kbd>C-c</kbd> insert</td><td>Same as Esc</td></tr>
+  </table>
+</section>
+
+<section class="c-nvim" id="find">
+  <h2>Find <span class="tag">snacks picker</span></h2>
+  <table>
+    <tr><td><kbd>␣ ff</kbd></td><td>Files</td></tr>
+    <tr><td><kbd>␣ fg</kbd></td><td>Grep in the project</td></tr>
+    <tr><td><kbd>␣ fw</kbd></td><td>Grep the word under the cursor</td></tr>
+    <tr><td><kbd>␣ fb</kbd> · <kbd>␣ fr</kbd></td><td>Open buffers · recent files</td></tr>
+    <tr><td><kbd>␣ fj</kbd></td><td>Java files only</td></tr>
+    <tr><td><kbd>␣ fs</kbd> · <kbd>␣ fS</kbd></td><td>Symbols in the file · in the workspace</td></tr>
+    <tr><td><kbd>␣ fd</kbd></td><td>Diagnostics</td></tr>
+    <tr><td><kbd>␣ ft</kbd> · <kbd>␣ fT</kbd></td><td>TODO comments · only TODO/FIX</td></tr>
+    <tr><td><kbd>␣ fc</kbd> · <kbd>␣ fC</kbd></td><td>Git commits · commits of this file</td></tr>
+    <tr><td><kbd>␣ fh</kbd> · <kbd>␣ fk</kbd></td><td>Help · key maps</td></tr>
+    <tr><td><kbd>␣ f/</kbd></td><td>Open the last search again</td></tr>
+    <tr><td><kbd>␣ fn</kbd></td><td>Notification history</td></tr>
+    <tr><td>in picker <kbd>C-j</kbd> <kbd>C-k</kbd></td><td>Next · previous item</td></tr>
+    <tr><td>in picker <kbd>C-v</kbd> <kbd>C-s</kbd></td><td>Open in a vertical · horizontal split</td></tr>
+    <tr><td>in picker <kbd>C-q</kbd></td><td>Send the results to quickfix</td></tr>
+  </table>
+</section>
+
+<section class="c-nvim" id="lsp">
+  <h2>LSP and completion <span class="tag">blink.cmp</span></h2>
+  <table>
+    <tr><td><kbd>gd</kbd> · <kbd>gD</kbd></td><td>Definition · declaration</td></tr>
+    <tr><td><kbd>gr</kbd> · <kbd>gR</kbd></td><td>References (picker) · references (Trouble)</td></tr>
+    <tr><td><kbd>gI</kbd> · <kbd>gt</kbd></td><td>Implementation · type definition</td></tr>
+    <tr><td><kbd>K</kbd></td><td>Hover documentation</td></tr>
+    <tr><td><kbd>␣ la</kbd></td><td>Code action</td></tr>
+    <tr><td><kbd>␣ lr</kbd></td><td>Rename the symbol</td></tr>
+    <tr><td><kbd>␣ lf</kbd> · <kbd>␣ lF</kbd></td><td>Format (LSP) · format (conform)</td></tr>
+    <tr><td><kbd>␣ ls</kbd></td><td>Signature help</td></tr>
+    <tr><td><kbd>␣ ld</kbd> · <kbd>␣ lD</kbd></td><td>Diagnostic float · buffer diagnostics</td></tr>
+    <tr><td><kbd>]d</kbd> <kbd>[d</kbd></td><td>Next · previous diagnostic</td></tr>
+    <tr><td><kbd>␣ xx</kbd> · <kbd>␣ xd</kbd></td><td>Trouble: all · this file</td></tr>
+    <tr><td><kbd>␣ xq</kbd> · <kbd>␣ xl</kbd></td><td>Trouble: quickfix · location list</td></tr>
+    <tr><td>insert <kbd>Tab</kbd> <kbd>S-Tab</kbd></td><td>Next · previous item, or snippet jump</td></tr>
+    <tr><td>insert <kbd>Enter</kbd></td><td>Accept the selected item</td></tr>
+    <tr><td>insert <kbd>C-Space</kbd> · <kbd>C-e</kbd></td><td>Open the menu · close it</td></tr>
+    <tr><td>insert <kbd>C-b</kbd> <kbd>C-f</kbd></td><td>Scroll the documentation</td></tr>
+  </table>
+</section>
+
+<section class="c-nvim" id="java">
+  <h2>Java <span class="tag">jdtls, Java files only</span></h2>
+  <table>
+    <tr><td><kbd>␣ jo</kbd></td><td>Organize imports</td></tr>
+    <tr><td><kbd>␣ jv</kbd> · <kbd>␣ jc</kbd></td><td>Extract variable · constant</td></tr>
+    <tr><td><kbd>␣ jm</kbd> visual</td><td>Extract method</td></tr>
+    <tr><td><kbd>␣ jt</kbd> · <kbd>␣ jT</kbd></td><td>Test the method · test the class</td></tr>
+    <tr><td><kbd>␣ ju</kbd></td><td>Update the jdtls project config</td></tr>
+    <tr><td><kbd>␣ jb</kbd></td><td>Show the bytecode</td></tr>
+  </table>
+</section>
+
+<section class="c-nvim" id="debug">
+  <h2>Debug <span class="tag">nvim-dap</span></h2>
+  <table>
+    <tr><td><kbd>␣ db</kbd></td><td>Toggle a breakpoint</td></tr>
+    <tr><td><kbd>␣ dc</kbd></td><td>Start · continue</td></tr>
+    <tr><td><kbd>␣ ds</kbd> · <kbd>␣ di</kbd> · <kbd>␣ do</kbd></td><td>Step over · into · out</td></tr>
+    <tr><td><kbd>␣ du</kbd></td><td>Toggle the debug UI</td></tr>
+    <tr><td><kbd>␣ dq</kbd></td><td>Stop debugging</td></tr>
+  </table>
+</section>
+
+<section class="c-git" id="nvgit">
+  <h2>Git in nvim <span class="tag">fugitive · gitsigns</span></h2>
+  <table>
+    <tr><td><kbd>␣ gg</kbd></td><td>lazygit in a float</td></tr>
+    <tr><td><kbd>␣ gs</kbd> · <kbd>␣ ge</kbd></td><td>Git status (fugitive) · changed files (picker)</td></tr>
+    <tr><td><kbd>␣ gc</kbd> · <kbd>␣ gp</kbd> · <kbd>␣ gP</kbd></td><td>Commit · push · pull</td></tr>
+    <tr><td><kbd>␣ gb</kbd> · <kbd>␣ gd</kbd></td><td>Blame · diff split</td></tr>
+    <tr><td><kbd>␣ gl</kbd> · <kbd>␣ gL</kbd></td><td>Log · log of all branches</td></tr>
+    <tr><td><kbd>␣ gr</kbd></td><td>Interactive rebase of the last 5</td></tr>
+    <tr><td><kbd>]h</kbd> <kbd>[h</kbd></td><td>Next · previous hunk</td></tr>
+    <tr><td><kbd>␣ ghs</kbd> · <kbd>␣ ghr</kbd></td><td>Stage · reset the hunk</td></tr>
+    <tr><td><kbd>␣ ghS</kbd> · <kbd>␣ ghR</kbd></td><td>Stage · reset the buffer</td></tr>
+    <tr><td><kbd>␣ ghu</kbd></td><td>Undo the last stage</td></tr>
+    <tr><td><kbd>␣ ghp</kbd> · <kbd>␣ ghd</kbd></td><td>Preview the hunk · diff this</td></tr>
+    <tr><td><kbd>␣ ghb</kbd> · <kbd>␣ ghB</kbd></td><td>Blame the line · inline blame on/off</td></tr>
+  </table>
+</section>
+
+<section class="c-nvim" id="edit">
+  <h2>Editing and moving <span class="tag">flash · harpoon · surround · grug-far</span></h2>
+  <table>
+    <tr><td><kbd>s</kbd></td><td>Flash: jump to any visible spot</td></tr>
+    <tr><td><kbd>S</kbd></td><td>Flash: select a treesitter node</td></tr>
+    <tr><td><kbd>r</kbd> operator · <kbd>R</kbd></td><td>Flash: remote operation · treesitter search</td></tr>
+    <tr><td><kbd>␣ ha</kbd> · <kbd>␣ hh</kbd></td><td>Harpoon: add the file · menu</td></tr>
+    <tr><td><kbd>␣ 1</kbd>…<kbd>␣ 4</kbd></td><td>Harpoon: go to file 1 to 4</td></tr>
+    <tr><td><kbd>␣ hn</kbd> · <kbd>␣ hp</kbd></td><td>Harpoon: next · previous</td></tr>
+    <tr><td><kbd>ys</kbd>motion char</td><td>Surround: add (ysiw" quotes a word)</td></tr>
+    <tr><td><kbd>cs</kbd>old new · <kbd>ds</kbd>char</td><td>Surround: change · delete</td></tr>
+    <tr><td><kbd>␣ sr</kbd></td><td>Search and replace in the project</td></tr>
+    <tr><td><kbd>␣ sw</kbd> · <kbd>␣ sf</kbd></td><td>Replace this word · replace in this file</td></tr>
+    <tr><td><kbd>]t</kbd> <kbd>[t</kbd></td><td>Next · previous TODO comment</td></tr>
+  </table>
+</section>
+
+<section class="c-git" id="lazygit">
+  <h2>lazygit <span class="tag">lg · prefix g · ␣ gg</span></h2>
+  <table>
+    <tr><td><kbd>1</kbd>…<kbd>5</kbd> · <kbd>[</kbd> <kbd>]</kbd></td><td>Jump to a panel · switch tabs</td></tr>
+    <tr><td><kbd>Space</kbd></td><td>Stage or unstage the file</td></tr>
+    <tr><td><kbd>a</kbd></td><td>Stage or unstage all files</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>Open the file to stage single lines</td></tr>
+    <tr><td><kbd>c</kbd></td><td>Commit</td></tr>
+    <tr><td><kbd>P</kbd> · <kbd>p</kbd></td><td>Push · pull</td></tr>
+    <tr><td><kbd>e</kbd></td><td>Edit the file in nvim</td></tr>
+    <tr><td><kbd>d</kbd></td><td>Discard changes (asks first)</td></tr>
+    <tr><td><kbd>|</kbd></td><td>Switch the diff view: delta · color-words</td></tr>
+    <tr><td><kbd>z</kbd> · <kbd>Z</kbd></td><td>Undo · redo</td></tr>
+    <tr><td><kbd>?</kbd></td><td>All keys for the current panel</td></tr>
+    <tr><td><kbd>q</kbd></td><td>Quit</td></tr>
+  </table>
+</section>
+
+<section class="c-git" id="workmux">
+  <h2>workmux <span class="tag">one worktree + window per task</span></h2>
+  <table>
+    <tr><td><code>workmux add &lt;name&gt;</code></td><td>New worktree + window: nvim left, Claude right</td></tr>
+    <tr><td><code>workmux add &lt;n&gt; -p "task"</code></td><td>Same, and send the task to the agent</td></tr>
+    <tr><td><code>workmux list</code></td><td>All worktrees and agent status</td></tr>
+    <tr><td><code>workmux merge</code></td><td>Rebase-merge, then remove worktree, window, branch</td></tr>
+    <tr><td><code>workmux remove</code></td><td>Remove without merging</td></tr>
+    <tr><td><code>workmux open</code> · <code>close</code></td><td>Open · close the window, keep the worktree</td></tr>
+    <tr><td><kbd>A</kbd> after prefix</td><td>Dashboard (<kbd>T</kbd> cycles themes)</td></tr>
+    <tr><td><kbd>B</kbd> after prefix</td><td>Status sidebar</td></tr>
+    <tr><td><code>/worktree &lt;task&gt;</code></td><td>Inside Claude: start the task in a new worktree</td></tr>
+  </table>
+  <p class="note">Project settings go in .workmux.yaml (<code>workmux init</code>). Run <code>workmux setup</code> once to get the status icons.</p>
+</section>
+
+<section class="c-wm" id="aero">
+  <h2>AeroSpace <span class="tag">modifier = ctrl-alt</span></h2>
+  <table>
+    <tr><td><kbd>⌃⌥ h/j/k/l</kbd></td><td>Focus left · down · up · right</td></tr>
+    <tr><td><kbd>⌃⌥⇧ h/j/k/l</kbd></td><td>Move the window</td></tr>
+    <tr><td><kbd>⌃⌥ 1</kbd>…<kbd>9</kbd></td><td>Go to a workspace (1-5 MSI, 6-9 laptop)</td></tr>
+    <tr><td><kbd>⌃⌥⇧ 1</kbd>…<kbd>9</kbd></td><td>Send the window there, and follow it</td></tr>
+    <tr><td><kbd>⌃⌥ /</kbd></td><td>Tiles layout, or flip its direction</td></tr>
+    <tr><td><kbd>⌃⌥ ,</kbd></td><td>Accordion layout (good for 3+ windows)</td></tr>
+    <tr><td><kbd>⌃⌥ f</kbd> · <kbd>⌃⌥⇧ f</kbd></td><td>Fullscreen · float or tile</td></tr>
+    <tr><td><kbd>⌃⌥ -</kbd> <kbd>⌃⌥ =</kbd></td><td>Shrink · grow</td></tr>
+    <tr><td><kbd>⌃⌥ Tab</kbd></td><td>Last workspace</td></tr>
+    <tr><td><kbd>⌃⌥⇧ Tab</kbd></td><td>Move the workspace to the next monitor</td></tr>
+    <tr><td><kbd>⌃⌥ Enter</kbd></td><td>Open Ghostty</td></tr>
+    <tr><td><kbd>⌃⌥ ;</kbd> then key</td><td>Service mode: <kbd>Esc</kbd> reload · <kbd>r</kbd> reset layout · <kbd>f</kbd> float · <kbd>⌫</kbd> close others · <kbd>⌃⌥⇧ hjkl</kbd> join</td></tr>
+  </table>
+</section>
+
+<section class="c-shell" id="zsh">
+  <h2>zsh <span class="tag">aliases and tools</span></h2>
+  <table>
+    <tr><td><kbd>C-f</kbd></td><td>tmux-sessionizer</td></tr>
+    <tr><td><kbd>C-r</kbd></td><td>History search (atuin)</td></tr>
+    <tr><td><kbd>C-t</kbd> · <kbd>Alt-c</kbd></td><td>fzf: insert a file · cd into a directory</td></tr>
+    <tr><td><kbd>→</kbd></td><td>Accept the autosuggestion</td></tr>
+    <tr><td><code>cd</code> · <code>z</code></td><td>zoxide: jump by part of a path</td></tr>
+    <tr><td><code>projects</code></td><td>fzf over every git repo under ~</td></tr>
+    <tr><td><code>l</code> · <code>lt</code> · <code>ltree</code></td><td>eza: long list · tree with details · plain tree</td></tr>
+    <tr><td><code>cat</code></td><td>bat</td></tr>
+    <tr><td><code>v</code> · <code>vim</code></td><td>nvim</td></tr>
+    <tr><td><code>lg</code></td><td>lazygit</td></tr>
+    <tr><td><code>gst</code> · <code>gadd</code> · <code>gc "msg"</code></td><td>git status · add · commit</td></tr>
+    <tr><td><code>gca</code></td><td>Add all and amend, no message edit</td></tr>
+    <tr><td><code>gps</code> · <code>gpl</code> · <code>gco</code> · <code>gb</code></td><td>push · pull · checkout · branch</td></tr>
+    <tr><td><code>hey</code> [query]</td><td>Browse installed tools and key bindings</td></tr>
+    <tr><td><code>keys</code> · <code>keymaps</code></td><td>Terminal key sheet (keys nvim, keys tmux) · fzf key search</td></tr>
+    <tr><td><code>claude-stel</code></td><td>Claude Code with the second account</td></tr>
+    <tr><td><code>tunnel</code></td><td>Cloudflare tunnel to localhost:8080</td></tr>
+    <tr><td><code>chezmoi diff</code> · <code>apply</code></td><td>Preview · deploy the dotfiles</td></tr>
+  </table>
+</section>
+
+<section class="c-shell" id="ghostty">
+  <h2>Ghostty <span class="tag">tmux owns splits and tabs</span></h2>
+  <table>
+    <tr><td><kbd>C-S-r</kbd></td><td>Reload the config</td></tr>
+    <tr><td><kbd>C-S-c</kbd> · <kbd>C-S-v</kbd></td><td>Copy · paste</td></tr>
+    <tr><td><kbd>C-S-+</kbd> <kbd>C-S--</kbd> <kbd>C-S-0</kbd></td><td>Font bigger · smaller · reset</td></tr>
+    <tr><td><kbd>⌘ Enter</kbd></td><td>Native fullscreen</td></tr>
+    <tr><td>left <kbd>⌥</kbd></td><td>Alt for tmux and nvim</td></tr>
+    <tr><td>right <kbd>⌥</kbd></td><td>Types @ # | [ ] { } \ (Spanish layout)</td></tr>
+  </table>
+</section>
+
+</main>
+<div id="empty">No match. Try a shorter word.</div>
+<footer>Made from the chezmoi source (~/.local/share/chezmoi), 2026-10-17, keyboard map added 2026-10-31. ␣ = Space (leader).</footer>
+
+<script>
+(function () {
+  var q = document.getElementById('q');
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section'));
+  var empty = document.getElementById('empty');
+  function filter() {
+    var term = q.value.trim().toLowerCase();
+    var any = false;
+    var kb = document.getElementById('keyboard');
+    var kbHit = !term || kb.textContent.toLowerCase().indexOf(term) !== -1;
+    kb.classList.toggle('hidden', !kbHit);
+    if (term && kbHit) any = true;
+    sections.forEach(function (s) {
+      var title = s.querySelector('h2').textContent.toLowerCase();
+      var rows = Array.prototype.slice.call(s.querySelectorAll('tr'));
+      var titleHit = term && title.indexOf(term) !== -1;
+      var shown = 0;
+      rows.forEach(function (r) {
+        var hit = !term || titleHit || r.textContent.toLowerCase().indexOf(term) !== -1;
+        r.classList.toggle('hidden', !hit);
+        if (hit) shown++;
+      });
+      var note = s.querySelector('p.note');
+      if (note) note.classList.toggle('hidden', !!term && !titleHit);
+      s.classList.toggle('hidden', shown === 0);
+      if (shown) any = true;
+    });
+    empty.style.display = any ? 'none' : 'block';
+  }
+  q.addEventListener('input', filter);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape') { q.value = ''; filter(); q.blur(); }
+  });
+})();
+</script>
+</body>
+</html>
