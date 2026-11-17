@@ -32,7 +32,6 @@ copy-on-select = clipboard
 confirm-close-surface = false
 window-save-state = always
 
-{{ if eq .chezmoi.os "darwin" -}}
 # ─── macOS ────────────────────────────────────────────────────────
 # Left Option is Alt, so tmux/nvim receive Alt-<key> (the floax
 # binding Alt+p and every other Meta chord). Right Option still types
@@ -46,7 +45,6 @@ macos-window-buttons = visible
 
 # Use the real macOS fullscreen (Cmd+Enter or Cmd+Ctrl+F).
 macos-non-native-fullscreen = false
-{{ end -}}
 
 # ─── Keybindings ──────────────────────────────────────────────────
 # tmux owns splits and tabs, so Ghostty only keeps the essentials.

@@ -1,19 +1,32 @@
 # 🔧 Dotfiles
 
-Configuración personal para macOS y Linux, gestionada con **[Chezmoi](https://www.chezmoi.io/)**.
+Configuración personal para macOS, gestionada con **[Chezmoi](https://www.chezmoi.io/)**.
 Diseñada para ser rápida, moderna y estéticamente agradable (Gruvbox Dark Hard Theme).
 
-![OS](https://img.shields.io/badge/OS-macOS%20%7C%20Linux-white?logo=apple)
+![OS](https://img.shields.io/badge/OS-macOS-white?logo=apple)
 ![Manager](https://img.shields.io/badge/Manage-Chezmoi-blue)
 ![Shell](https://img.shields.io/badge/Shell-Zsh-green)
 
-## 🚀 Instalación Rápida (One-Liner)
+## 🚀 Instalación rápida (one-liner)
 
-En una máquina nueva (Mac o Linux), abre la terminal y ejecuta:
+En un Mac nuevo, abre la terminal y ejecuta:
 
 ```bash
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply wall3n
 ```
+
+Eso instala chezmoi, clona este repo y aplica la config. El script
+`run_onchange_after_install-packages.sh` deja el Mac listo:
+
+- **Homebrew**, si falta, y el `Brewfile` (zsh, neovim, tmux, fzf, eza, bat, AeroSpace, …).
+- **mise** y los runtimes de `dot_config/mise/config.toml`: Java 21 (Temurin), Node 24, Python 3.13 y uv.
+- **OpenCode** y **Claude Code** (instalador nativo, canal stable), si no están.
+- **Ghostty**, Starship y la Nerd Font JetBrains Mono, si faltan.
+- zsh como shell por defecto, key repeat rápido y los ajustes de macOS que pide AeroSpace.
+- LSP y formatters de Neovim vía Mason: `jdtls`, `java-debug-adapter`, `java-test`, Prettier, `google-java-format` y Stylua.
+
+Después, `run_onchange_after_restore-claude.sh` reinstala las skills de terceros
+del lock y los plugins de Claude Code.
 
 ## 🤖 Claude Code
 
