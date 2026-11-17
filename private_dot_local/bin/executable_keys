@@ -1,20 +1,11 @@
 #!/usr/bin/env bash
-# keys — keybinding cheatsheet for Nvim, Tmux, i3 (and shell)
-# OS-aware: i3 section shows on Linux only (i3 is X11/Linux-only).
+# keys — keybinding cheatsheet for Neovim, tmux and the shell.
 # Usage:
-#   keys            # show all relevant sections for this OS
+#   keys            # all sections
 #   keys nvim       # only Neovim
 #   keys tmux       # only Tmux
-#   keys i3         # only i3 (Linux)
 #   keys shell      # only shell aliases/bindings
 set -euo pipefail
-
-# ---- OS detection ----------------------------------------------------------
-case "$(uname -s)" in
-  Darwin) OS="mac" ;;
-  Linux)  OS="linux" ;;
-  *)      OS="other" ;;
-esac
 
 # ---- which sections to print ----------------------------------------------
 WHAT="${1:-all}"
@@ -108,41 +99,6 @@ cat <<'EOF'
 EOF
 }
 
-i3_sheet() {
-cat <<'EOF'
-#   i3wm  —  mod = Super (Mod4)
-
-## Lanzar / cerrar
-| Key                | Action                      |
-|--------------------|-----------------------------|
-| `mod+Return`       | Terminal                    |
-| `mod+d`            | rofi (drun)                 |
-| `mod+q`            | Cerrar ventana              |
-| `mod+Shift+x`      | Bloquear pantalla           |
-| `mod+Shift+v`      | pavucontrol                 |
-| `mod+Shift+r`      | Recargar i3                 |
-| `mod+Shift+e`      | Salir de i3                 |
-
-## Foco / mover
-| Key                | Action                      |
-|--------------------|-----------------------------|
-| `mod+h/j/k/l`      | Mover foco                  |
-| `mod+Shift+h/j/k/l`| Mover ventana               |
-| `mod+b` / `mod+v`  | Split horiz / vert          |
-| `mod+f`            | Fullscreen toggle           |
-| `mod+s/w/e`        | Stacking / Tabbed / Toggle  |
-| `mod+Shift+space`  | Floating toggle             |
-| `mod+space`        | Foco floating <-> tiling    |
-| `mod+r`            | Modo resize                 |
-
-## Workspaces
-| Key                | Action                      |
-|--------------------|-----------------------------|
-| `mod+1..0`         | Ir a workspace 1..10        |
-| `mod+Shift+1..0`   | Mover ventana a workspace   |
-EOF
-}
-
 shell_sheet() {
 cat <<'EOF'
 #   Shell
@@ -172,18 +128,14 @@ build() {
   case "$WHAT" in
     nvim)  nvim_sheet ;;
     tmux)  tmux_sheet ;;
-    i3)    i3_sheet ;;
     shell) shell_sheet ;;
     all)
       nvim_sheet; echo
       tmux_sheet; echo
-      if [ "$OS" = "linux" ]; then
-        i3_sheet; echo
-      fi
       shell_sheet
       ;;
     *)
-      echo "uso: keys [nvim|tmux|i3|shell|all]" >&2
+      echo "uso: keys [nvim|tmux|shell|all]" >&2
       exit 1
       ;;
   esac

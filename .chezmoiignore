@@ -4,16 +4,9 @@ LICENSE
 .gitignore
 token.txt
 CLAUDE.md
-AUDIT_REPORT.md
 Brewfile
 docs/
 .config/tmux/plugins
-{{ if ne .chezmoi.os "linux" }}
-.config/i3
-{{ end }}
-{{ if ne .chezmoi.os "darwin" }}
-.config/aerospace
-{{ end }}
 
 # Real files behind the ~/.claude symlinks (see dot_claude/)
 claude

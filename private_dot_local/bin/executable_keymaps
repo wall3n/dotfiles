@@ -227,6 +227,6 @@ keymaps \
     --bind "ctrl-n:change-query(NVIM)" \
     --bind "ctrl-g:change-query(GHOSTTY)" \
     --bind "ctrl-a:change-query()" \
-    --bind "enter:execute(echo {3} | tr -d '\n' | xclip -selection clipboard 2>/dev/null || echo {3} | tr -d '\n' | pbcopy 2>/dev/null)+abort" \
+    --bind "enter:execute(echo {3} | tr -d '\n' | pbcopy)+abort" \
     --bind "esc:abort" \
     | awk -F'\t' '{print $3, "-", $4}'

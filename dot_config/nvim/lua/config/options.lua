@@ -65,7 +65,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Asegurar que el directorio de undo existe (mkdir nativo: sin fork de shell
--- en cada arranque, y funciona igual en macOS y en Linux)
+-- en cada arranque)
 vim.fn.mkdir(vim.fn.stdpath("state") .. "/undodir", "p")
 
 -- El log de LSP crecía sin límite (llegó a 371 MB con jdtls). OFF en uso normal;

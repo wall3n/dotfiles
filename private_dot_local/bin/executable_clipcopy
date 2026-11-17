@@ -1,16 +1,9 @@
 #!/usr/bin/env bash
-# Portable clipboard copy: reads stdin, writes to the system clipboard.
-# macOS -> pbcopy | Wayland -> wl-copy | X11 -> xclip/xsel | tmux -> load-buffer
+# Copy stdin to the macOS clipboard (pbcopy, or the tmux buffer as fallback).
 set -euo pipefail
 
 if command -v pbcopy >/dev/null 2>&1; then
     exec pbcopy
-elif [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-copy >/dev/null 2>&1; then
-    exec wl-copy
-elif command -v xclip >/dev/null 2>&1; then
-    exec xclip -selection clipboard -in
-elif command -v xsel >/dev/null 2>&1; then
-    exec xsel --clipboard --input
 elif command -v tmux >/dev/null 2>&1 && [ -n "${TMUX:-}" ]; then
     exec tmux load-buffer -
 else
